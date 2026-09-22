@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Social Spark — Docs</title>
+<style>
+  :root {
+    --bg: #fafbfc; --panel: #fff; --border: #dde1e6; --text: #1f2430;
+    --muted: #5f6672; --accent: #4285F4; --accent-soft: #e8f0fe;
+    --shadow: 0 1px 2px rgba(16,24,40,.04), 0 4px 12px rgba(16,24,40,.05);
+    --shadow-lift: 0 2px 4px rgba(16,24,40,.06), 0 12px 28px rgba(16,24,40,.10);
+
+    /* One hue per pillar, so a lab is recognisable before you read its name.
+       Google's own four-colour palette, in pillar order. */
+    --build: #4285F4;    --build-soft: rgba(66,133,244,.10);
+    --scale: #34A853;    --scale-soft: rgba(52,168,83,.10);
+    --govern: #FBBC05;   --govern-soft: rgba(251,188,5,.14);
+    --optimise: #EA4335; --optimise-soft: rgba(234,67,53,.10);
+  }
+  /* Dark by default when the OS says so, unless the reader has forced light;
+     and available explicitly via [data-theme], which the toggle sets. The
+     values live in one place so the two rules can never drift apart. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#14171c; --panel:#1a1e24; --border:#2a2f37; --text:#e7e9ec;
+      --muted:#a7adb6; --accent:#8ab4f8; --accent-soft:rgba(138,180,248,.14);
+      --shadow: 0 1px 2px rgba(0,0,0,.30), 0 4px 14px rgba(0,0,0,.28);
+      --shadow-lift: 0 2px 6px rgba(0,0,0,.38), 0 14px 32px rgba(0,0,0,.40);
+      --build:#8ab4f8;    --build-soft: rgba(138,180,248,.14);
+      --scale:#81c995;    --scale-soft: rgba(129,201,149,.14);
+      --govern:#fdd663;   --govern-soft: rgba(253,214,99,.14);
+      --optimise:#f28b82; --optimise-soft: rgba(242,139,130,.14);
+    }
+  }
+  :root[data-theme="dark"] {
+      --bg:#14171c; --panel:#1a1e24; --border:#2a2f37; --text:#e7e9ec;
+      --muted:#a7adb6; --accent:#8ab4f8; --accent-soft:rgba(138,180,248,.14);
+      --shadow: 0 1px 2px rgba(0,0,0,.30), 0 4px 14px rgba(0,0,0,.28);
+      --shadow-lift: 0 2px 6px rgba(0,0,0,.38), 0 14px 32px rgba(0,0,0,.40);
+      --build:#8ab4f8;    --build-soft: rgba(138,180,248,.14);
+      --scale:#81c995;    --scale-soft: rgba(129,201,149,.14);
+      --govern:#fdd663;   --govern-soft: rgba(253,214,99,.14);
+      --optimise:#f28b82; --optimise-soft: rgba(242,139,130,.14);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 40px 28px 56px;
+  }
+  main { width: 100%; max-width: 1180px; margin: 0 auto; }
+
+  .brand { display: flex; align-items: center; gap: 11px; margin-bottom: 6px; }
+  .mark { width: 34px; height: 34px; border-radius: 10px; background: conic-gradient(from 200deg,#1a73e8,#34a853,#fbbc04,#ea4335,#1a73e8); }
+  h1 { font-size: 24px; margin: 0; letter-spacing: -0.015em; }
+  p.sub { color: var(--muted); margin: 0 0 26px; font-size: 14.5px; max-width: 68ch; }
+  h2.section { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 34px 0 12px; font-weight: 700; }
+
+  /* ---------- bento ---------- */
+  /* A 12-column bed. Tiles claim different spans, so the eye lands on the
+     important things first instead of reading a list top to bottom. */
+  .bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+  .tile {
+    grid-column: span 3;
+    display: flex; flex-direction: column; gap: 5px;
+    padding: 18px 20px; border: 1px solid var(--border); border-radius: 16px;
+    background: var(--panel); text-decoration: none; color: var(--text);
+    box-shadow: var(--shadow);
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    position: relative; overflow: hidden;
+  }
+  a.tile:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); border-color: var(--tint, var(--accent)); }
+  a.tile:focus-visible { outline: 2px solid var(--tint, var(--accent)); outline-offset: 2px; }
+  .tile .kicker { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--tint, var(--accent)); }
+  .tile .title { font-size: 17px; font-weight: 650; letter-spacing: -0.01em; }
+  .tile .desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .tile .meta { font-size: 11.5px; color: var(--muted); margin-top: auto; padding-top: 10px; }
+
+  .span-4 { grid-column: span 4; }
+  .span-5 { grid-column: span 5; }
+  .span-6 { grid-column: span 6; }
+  .span-7 { grid-column: span 7; }
+  .span-8 { grid-column: span 8; }
+  .span-9 { grid-column: span 9; }
+  .span-12 { grid-column: span 12; }
+
+  /* A pillar tile wears its colour: tinted wash, and a bar down the edge. */
+  .pillar { background: linear-gradient(180deg, var(--tint-soft) 0%, transparent 62%), var(--panel); }
+  .pillar::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--tint); }
+  .pillar .title { font-size: 19px; }
+  .p-build    { --tint: var(--build);    --tint-soft: var(--build-soft); }
+  .p-scale    { --tint: var(--scale);    --tint-soft: var(--scale-soft); }
+  .p-govern   { --tint: var(--govern);   --tint-soft: var(--govern-soft); }
+  .p-optimise { --tint: var(--optimise); --tint-soft: var(--optimise-soft); }
+
+  .locked { opacity: .62; cursor: default; box-shadow: none; }
+  .locked:hover { transform: none; box-shadow: none; border-color: var(--border); }
+  .badge {
+    display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; padding: 2px 7px; border-radius: 999px;
+    background: var(--tint-soft); color: var(--tint); border: 1px solid var(--tint-soft);
+  }
+
+  /* The platform diagram, as its own wide tile. */
+  .diagram-tile { padding: 18px 20px 16px; }
+  .diagram-tile img {
+    width: 100%; height: auto; object-fit: contain;
+    display: block; border-radius: 10px; padding: 12px;
+  }
+  .diagram-tile a.zoom { display: block; }
+  /* Google publishes light and dark artwork. Mirror the palette's three states
+     exactly, so the diagram can never end up light-on-light or dark-on-dark. */
+  .diagram-tile .art-dark { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .diagram-tile .art-light { display: none; }
+    :root:not([data-theme="light"]) .diagram-tile .art-dark { display: block; }
+  }
+  :root[data-theme="dark"] .diagram-tile .art-light { display: none; }
+  :root[data-theme="dark"] .diagram-tile .art-dark { display: block; }
+  .diagram-tile .cap { font-size: 12.5px; color: var(--muted); }
+  .diagram-tile a { color: var(--accent); }
+
+  .start-here { --tint: var(--accent); --tint-soft: var(--accent-soft); }
+  .start-here::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--accent); }
+
+  footer { margin-top: 34px; font-size: 12.5px; color: var(--muted); }
+  code { background: var(--accent-soft); color: var(--accent); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+
+  @media (max-width: 1000px) {
+    .tile, .span-4, .span-5, .span-6, .span-7, .span-8 { grid-column: span 6; }
+    .span-12, .diagram-tile { grid-column: span 12; }
+  }
+  @media (max-width: 620px) {
+    body { padding: 28px 16px 40px; }
+    .tile, .span-4, .span-5, .span-6, .span-7, .span-8, .span-12 { grid-column: span 12; }
+  }
+
+  /* ---------- theme toggle ---------- */
+  .theme-toggle {
+    position: fixed; top: 14px; right: 14px; z-index: 999;
+    width: 34px; height: 34px; padding: 0; border-radius: 10px;
+    display: grid; place-items: center; cursor: pointer;
+    background: var(--panel, var(--bg-panel, #fff));
+    border: 1px solid var(--border); color: var(--muted, var(--text-muted, #666));
+    font-size: 15px; line-height: 1;
+    box-shadow: 0 1px 3px rgba(0,0,0,.10);
+  }
+  .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media print { .theme-toggle { display: none; } }
+  /* yellow is too light to read as text on its own tint */
+  .p-govern .badge { color: var(--text); }
+</style>
+<script>
+  // Runs before the stylesheet paints: reading localStorage here avoids the
+  // flash of the OS theme before the reader's own choice is applied.
+  try {
+    var t = localStorage.getItem("social-spark-theme");
+    if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+  } catch (e) { /* private mode — fall back to the OS preference */ }
+</script>
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch between light and dark" title="Switch theme">🌗</button>
+
+<main>
+  <div class="brand"><div class="mark"></div><h1>Social Spark — Docs</h1></div>
+  <p class="sub">The finished, governed reference implementation. Served straight from this repo — no build step, just point a static server at this folder.</p>
+
+  <h2 class="section">Start here</h2>
+  <div class="bento">
+    <a class="tile span-7 start-here" href="setup-guide.html">
+      <div class="kicker">Pre-camp · do this first</div>
+      <div class="title">Attendee setup guide</div>
+      <div class="desc">GCP project, spend cap, local tools, Antigravity with the Agent Platform fallback, buddy check — everything to finish before the first Saturday.</div>
+      <div class="meta">4 phases · 45–60 min · screenshots included</div>
+    </a>
+    <a class="tile span-5" href="lab-1-build.html">
+      <div class="kicker">Jump straight in</div>
+      <div class="title">Lab 1 — Build →</div>
+      <div class="desc">The first workshop. Write a real ADK agent, end to end.</div>
+      <div class="meta">11 steps · ~2 hours</div>
+    </a>
+  </div>
+
+  <h2 class="section">GDG DevCamp — the four pillars</h2>
+  <div class="bento">
+    <div class="tile span-9 diagram-tile">
+      <div class="kicker">The platform</div>
+      <a class="zoom" href="https://docs.cloud.google.com/gemini-enterprise-agent-platform/overview" target="_blank" rel="noopener"
+         title="Open the official overview on Google Cloud">
+        <img class="art-light"
+             src="https://storage.googleapis.com/gweb-cloudblog-publish/images/1_0_gemini_enterprise_agent_platform.max-2200x2200.jpg"
+             alt="The Gemini Enterprise Agent Platform: the Build, Scale, Govern and Optimise pillars and the services within each.">
+        <img class="art-dark"
+             src="https://storage.googleapis.com/gweb-cloudblog-publish/images/1_gemini_enterprise_agent_platform_7Yj4NjK.max-2200x2200.jpg"
+             alt="">
+      </a>
+      <div class="cap">Diagram from Google Cloud — <a href="https://docs.cloud.google.com/gemini-enterprise-agent-platform/overview" target="_blank" rel="noopener">read the official overview ↗</a></div>
+    </div>
+    <div class="tile span-3">
+      <div class="kicker">How the labs work</div>
+      <div class="title">One pillar at a time</div>
+      <div class="desc">Each lab takes a single pillar and applies it to this agent: <strong>Theory</strong> (the general concept), a hands-on <strong>Workshop</strong>, and a self-directed <strong>Assignment</strong> you do on your own agent afterwards.</div>
+      <div class="desc">Every lab names one deliberate error up front — a real constraint you will hit — rather than quietly routing around it.</div>
+      <div class="meta">Four sessions · Sept–Oct</div>
+    </div>
+
+    <a class="tile span-6 pillar p-build" href="lab-1-build.html">
+      <div class="kicker">Lab 1 · available</div>
+      <div class="title">Build</div>
+      <div class="desc">ADK, Model Garden, Agent Skills, tools, MCP toolsets — design and compose the agent.</div>
+      <div class="meta">Session 1 · the lab you start with</div>
+    </a>
+    <div class="tile span-6 pillar p-scale locked">
+      <div class="kicker">Lab 2 <span class="badge">after Session 2</span></div>
+      <div class="title">Scale</div>
+      <div class="desc">Agent Runtime, Agent Identity, Sessions, Memory Bank — run the agent on managed infrastructure, and keep what matters when it scales to zero.</div>
+      <div class="meta">Session 2 · 1 &amp; 3 Oct</div>
+    </div>
+    <div class="tile span-6 pillar p-govern locked">
+      <div class="kicker">Lab 3 <span class="badge">after Session 3</span></div>
+      <div class="title">Govern</div>
+      <div class="desc">Model Armor, Cloud DLP, Governance Policies, Agent Registry, Agent Gateway — control what the agent may do.</div>
+      <div class="meta">Session 3 · 8 &amp; 10 Oct</div>
+    </div>
+    <div class="tile span-6 pillar p-optimise locked">
+      <div class="kicker">Lab 4 <span class="badge">after Session 4</span></div>
+      <div class="title">Optimise</div>
+      <div class="desc">Golden evals, BigQuery Agent Analytics, traces, eval-gated deploys — measure it, then make it better and cheaper.</div>
+      <div class="meta">Session 4 · 15 &amp; 17 Oct</div>
+    </div>
+  </div>
+
+  <h2 class="section">Reference — how this repo's production setup works</h2>
+  <div class="bento">
+    <a class="tile span-4" href="doc-viewer.html?src=agent-runtime-deploy.md">
+      <div class="title">Agent Runtime deploy</div>
+      <div class="desc">One command, the <code>/api</code> passthrough, sessions &amp; memory, frontend on Cloud Run</div>
+    </a>
+    <a class="tile span-4" href="doc-viewer.html?src=cloud-run-deploy.md">
+      <div class="title">Cloud Run deploy (optional)</div>
+      <div class="desc">Optional reference: IAM, Dockerfile, eval-gated CI/CD</div>
+    </a>
+    <a class="tile span-4" href="doc-viewer.html?src=observability.md">
+      <div class="title">Observability</div>
+      <div class="desc">Cloud Trace, BigQuery analytics</div>
+    </a>
+    <a class="tile span-4" href="doc-viewer.html?src=model-armor-setup.md">
+      <div class="title">Model Armor setup</div>
+      <div class="desc">Guardrails: templates, grants and switches</div>
+    </a>
+    <a class="tile span-4" href="doc-viewer.html?src=injection-attack-table.md">
+      <div class="title">Injection attack table</div>
+      <div class="desc">What's blocked vs. not</div>
+    </a>
+    <a class="tile span-4" href="doc-viewer.html?src=agent-engine-rag-setup.md">
+      <div class="title">Agent Engine RAG</div>
+      <div class="desc">Memory agent deploy</div>
+    </a>
+    <a class="tile span-12" href="doc-viewer.html?src=LEARNINGS.md">
+      <div class="kicker">Worth reading before you deploy anything</div>
+      <div class="title">Learnings</div>
+      <div class="desc">Every gotcha hit while building this, dated and explained — what happened, why, and what it means for your own agent. Most of them cost hours.</div>
+    </a>
+  </div>
+
+  <footer>Running locally: <code>cd docs &amp;&amp; python -m http.server 8080</code>, then open <code>localhost:8080</code>.</footer>
+</main>
+<script>
+  // Three states, not two: no stored value means "follow the OS", which is the
+  // default until the reader expresses a preference. The toggle then pins the
+  // opposite of whatever is currently showing.
+  (function () {
+    var KEY = "social-spark-theme";
+    var root = document.documentElement;
+    var btn = document.getElementById("themeToggle");
+    function showing() {
+      return root.dataset.theme
+        || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    }
+    function paint() {
+      var s = showing();
+      btn.textContent = s === "dark" ? "☀️" : "🌙";
+      btn.title = s === "dark" ? "Switch to light" : "Switch to dark";
+    }
+    btn.addEventListener("click", function () {
+      var next = showing() === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      try { localStorage.setItem(KEY, next); } catch (e) { /* not fatal */ }
+      paint();
+    });
+    // Track the OS while the reader is still following it.
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
+      if (!root.dataset.theme) paint();
+    });
+    paint();
+  })();
+</script>
+</body>
+</html>

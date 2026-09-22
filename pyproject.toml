@@ -1,0 +1,25 @@
+[project]
+name = "social-spark"
+version = "0.1.0"
+requires-python = ">=3.12"
+# Versions pinned exactly (go/no-go #4: agent frameworks move fast; codelab must reproduce).
+dependencies = [
+    "google-adk[a2a,eval]==2.4.0",
+    "google-genai==2.11.0",
+    "python-dotenv==1.2.2",
+    "fastmcp==3.4.4",
+    "httpx==0.28.1",
+    "google-cloud-storage==3.13.0",
+    "ag-ui-adk==0.7.0",
+    "fastapi==0.139.0",
+    "uvicorn==0.51.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest==9.1.1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

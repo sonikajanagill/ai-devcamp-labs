@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="pageTitle">Doc Viewer</title>
+<style>
+  :root {
+    --bg: #fafbfc; --bg-panel: #ffffff; --bg-code: #12161c; --code-text: #e3e6ea; --code-comment: #7c8a9c; --code-border: #262b33;
+    --border: #dde1e6; --text: #1f2430; --text-muted: #5f6672; --text-faint: #8a909b;
+    --accent: #4285F4; --accent-hover: #1558b0; --accent-soft: #e8f0fe;
+    --font-display: -apple-system, "Google Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-body: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14171c; --bg-panel: #1a1e24; --border: #2a2f37; --text: #e7e9ec;
+      --text-muted: #a7adb6; --text-faint: #767c86; --accent: #8ab4f8; --accent-hover: #aecbfa;
+      --accent-soft: rgba(138,180,248,.14);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171c; --bg-panel: #1a1e24; --border: #2a2f37; --text: #e7e9ec;
+    --text-muted: #a7adb6; --text-faint: #767c86; --accent: #8ab4f8; --accent-hover: #aecbfa;
+    --accent-soft: rgba(138,180,248,.14);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-body);
+    font-size: 15.5px; line-height: 1.68; -webkit-font-smoothing: antialiased;
+  }
+  .topbar {
+    position: sticky; top: 0; display: flex; align-items: center; gap: 14px;
+    background: var(--bg); border-bottom: 1px solid var(--border); padding: 12px 64px 12px 24px; z-index: 10;
+  }
+  .topbar a.back { color: var(--text-muted); text-decoration: none; font-size: 13.5px; display: flex; align-items: center; gap: 5px; }
+  .topbar a.back:hover { color: var(--accent); }
+  .topbar .fname { margin-left: auto; font-family: var(--font-mono); font-size: 11.5px; color: var(--text-faint); }
+  .topbar .fname a { color: inherit; }
+  article { max-width: 60%; margin: 0 auto; padding: 40px 24px 80px; }
+  h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; color: var(--text); }
+  h1 { font-size: 27px; margin: 0 0 20px; }
+  h2 { font-size: 20px; margin: 34px 0 12px; padding-top: 6px; border-top: 1px solid var(--border); }
+  h2:first-child { border-top: none; padding-top: 0; }
+  h3 { font-size: 16.5px; margin: 24px 0 10px; }
+  h4 { font-size: 13.5px; margin: 18px 0 8px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--text-muted); }
+  p { margin: 0 0 14px; }
+  a { color: var(--accent); }
+  ul, ol { margin: 0 0 14px; padding-left: 1.4em; }
+  li { margin-bottom: 5px; }
+  hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+  code { font-family: var(--font-mono); font-size: 0.87em; background: var(--accent-soft); color: var(--accent-hover); padding: 0.1em 0.4em; border-radius: 4px; }
+  blockquote {
+    margin: 16px 0; padding: 10px 16px; border-left: 3px solid var(--accent);
+    background: var(--accent-soft); border-radius: 0 8px 8px 0; color: var(--text-muted);
+  }
+  blockquote p:last-child { margin-bottom: 0; }
+  blockquote code { background: rgba(0,0,0,0.08); }
+  .alert {
+    margin: 18px 0; padding: 14px 18px; border-radius: 8px; border-left: 4px solid;
+    font-size: 14.8px; line-height: 1.6;
+  }
+  .alert p:first-child { margin-top: 0; }
+  .alert p:last-child { margin-bottom: 0; }
+  .alert-title { font-weight: 700; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .alert-note { background: rgba(66, 133, 244, 0.08); border-color: #4285F4; color: var(--text); }
+  .alert-note .alert-title { color: #4285F4; }
+  .alert-important { background: rgba(234, 67, 53, 0.08); border-color: #EA4335; color: var(--text); }
+  .alert-important .alert-title { color: #EA4335; }
+  .alert-tip { background: rgba(52, 168, 83, 0.08); border-color: #34A853; color: var(--text); }
+  .alert-tip .alert-title { color: #34A853; }
+  .alert-warning { background: rgba(251, 188, 5, 0.12); border-color: #FBBC05; color: var(--text); }
+  .alert-warning .alert-title { color: var(--text); }
+  .alert-caution { background: rgba(234, 67, 53, 0.09); border-color: #EA4335; color: var(--text); }
+  .alert-caution .alert-title { color: #EA4335; }
+  .code-block { margin: 14px 0 18px; border-radius: 10px; overflow: hidden; border: 1px solid var(--code-border); }
+  .code-head { background: #1a1f27; padding: 7px 12px; font-size: 11px; color: var(--code-comment); font-family: var(--font-mono); border-bottom: 1px solid var(--code-border); }
+  pre { margin: 0; background: var(--bg-code); padding: 14px 16px; overflow-x: auto; }
+  pre code { background: none; padding: 0; color: var(--code-text); font-size: 12.8px; line-height: 1.6; }
+  .tbl-wrap { overflow-x: auto; margin: 14px 0 20px; border: 1px solid var(--border); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.4px; }
+  th, td { text-align: left; padding: 8px 13px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { background: var(--bg-panel); font-weight: 700; color: var(--text-muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; }
+  tr:last-child td { border-bottom: none; }
+  img { max-width: 520px; width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border); display: block; margin: 14px auto; }
+  .img-row { display: flex; gap: 12px; margin: 14px auto; align-items: flex-start; justify-content: center; max-width: 680px; }
+  .img-row img { flex: 1 1 0; min-width: 0; width: 50%; max-width: 100%; margin: 0; }
+  @media (max-width: 640px) {
+    img { max-width: 100%; }
+    .img-row { flex-direction: column; }
+    .img-row img { width: 100%; }
+  }
+  .state { color: var(--text-faint); padding: 60px 24px; text-align: center; font-size: 14px; }
+  /* ---------- theme toggle ---------- */
+  .theme-toggle {
+    position: fixed; top: 14px; right: 14px; z-index: 999;
+    width: 34px; height: 34px; padding: 0; border-radius: 10px;
+    display: grid; place-items: center; cursor: pointer;
+    background: var(--bg-panel, #fff);
+    border: 1px solid var(--border); color: var(--text-muted, #666);
+    font-size: 15px; line-height: 1;
+    box-shadow: 0 1px 3px rgba(0,0,0,.10);
+  }
+  .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media print { .theme-toggle { display: none; } }
+</style>
+<script>
+  try {
+    var t = localStorage.getItem("social-spark-theme");
+    if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+  } catch (e) { /* private mode — fall back to the OS preference */ }
+</script>
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch between light and dark" title="Switch theme">🌗</button>
+
+  <div class="topbar">
+    <a class="back" href="index.html">&larr; Docs</a>
+    <span class="fname" id="fname"></span>
+  </div>
+  <article id="content"><p class="state">Loading…</p></article>
+
+<script>
+  function escapeHtml(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function renderInline(text) {
+    const codes = [];
+    text = text.replace(/`([^`]+)`/g, (m, c) => {
+      codes.push(escapeHtml(c));
+      return "\u0000code" + (codes.length - 1) + "\u0000";
+    });
+    const rawImgs = [];
+    text = text.replace(/<img\b[^>]*\/?>/gi, (m) => {
+      rawImgs.push(m);
+      return "\u0000img" + (rawImgs.length - 1) + "\u0000";
+    });
+    text = escapeHtml(text);
+    text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (m, alt, url) => {
+      return `<img src="${url}" alt="${alt}">`;
+    });
+    text = text.replace(/\u0000img(\d+)\u0000/g, (m, i) => rawImgs[+i]);
+    text = text.replace(/((?:<img\b[^>]*>\s*){2,})/g, (m) => {
+      return `<div class="img-row">${m}</div>`;
+    });
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (m, t, url) => {
+      const ext = /^https?:/.test(url) ? ' target="_blank" rel="noopener"' : "";
+      return `<a href="${url}"${ext}>${t}</a>`;
+    });
+    text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+    text = text.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+    text = text.replace(/\u0000code(\d+)\u0000/g, (m, i) => `<code>${codes[+i]}</code>`);
+    return text;
+  }
+
+  function renderMarkdown(src) {
+    // HTML comments are authoring markers (e.g. the pillar sections in LEARNINGS.md), not content.
+    src = src.replace(/<!--[\s\S]*?-->/g, "");
+    const lines = src.replace(/\r\n/g, "\n").split("\n");
+    let html = "";
+    let i = 0;
+    let listStack = [];
+    function closeList(targetIndent = -1) {
+      while (listStack.length > 0 && (targetIndent < 0 || listStack[listStack.length - 1].indent > targetIndent)) {
+        const item = listStack.pop();
+        html += `</${item.type}>\n`;
+      }
+    }
+
+    while (i < lines.length) {
+      const line = lines[i];
+
+      // Leading whitespace is allowed: a fence indented to sit inside a list
+      // item is still a fence. Without this it falls through to the paragraph
+      // branch below, which joins lines with spaces — turning a shell block
+      // into one unreadable line.
+      const fence = line.match(/^(\s*)```(\S*)\s*$/);
+      if (fence) {
+        closeList();
+        const indent = fence[1];
+        const lang = fence[2] || "text";
+        const code = [];
+        i++;
+        while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) { code.push(lines[i]); i++; }
+        i++;
+        // Strip the fence's own indentation from the body, so code indented
+        // for the list doesn't render with phantom left padding.
+        if (indent) {
+          for (let k = 0; k < code.length; k++) {
+            code[k] = code[k].startsWith(indent) ? code[k].slice(indent.length) : code[k].replace(/^\s+/, "");
+          }
+        }
+        html += `<div class="code-block"><div class="code-head">${escapeHtml(lang)}</div><pre><code>${escapeHtml(code.join("\n"))}</code></pre></div>\n`;
+        continue;
+      }
+
+      // Inline <svg> passes through verbatim, so a diagram can inherit the
+      // page's CSS variables and follow the theme. Handled at block level
+      // because an svg spans blank lines, which the paragraph splitter would
+      // otherwise treat as separate paragraphs and escape.
+      if (/^\s*<svg\b/i.test(line)) {
+        closeList();
+        const svg = [];
+        while (i < lines.length) {
+          svg.push(lines[i]);
+          if (/<\/svg>/i.test(lines[i])) { i++; break; }
+          i++;
+        }
+        html += svg.join("\n") + "\n";
+        continue;
+      }
+
+      if (/^\s*$/.test(line)) { closeList(); i++; continue; }
+
+      if (/^(-{3,}|\*{3,}|_{3,})\s*$/.test(line)) { closeList(); html += "<hr>\n"; i++; continue; }
+
+      const h = line.match(/^(#{1,6})\s+(.*)$/);
+      if (h) { closeList(); const lvl = h[1].length; html += `<h${lvl}>${renderInline(h[2])}</h${lvl}>\n`; i++; continue; }
+
+      if (/^>\s?/.test(line)) {
+        closeList();
+        const quote = [];
+        while (i < lines.length && /^>/.test(lines[i])) {
+          quote.push(lines[i].replace(/^>\s?/, "")); i++;
+        }
+        const firstLine = quote[0] ? quote[0].trim() : "";
+        const alertMatch = firstLine.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]$/i);
+        if (alertMatch) {
+          const type = alertMatch[1].toUpperCase();
+          quote.shift(); // remove the [!ALERT] marker
+          const icons = {
+            NOTE: "ℹ️",
+            TIP: "💡",
+            IMPORTANT: "⚡",
+            WARNING: "⚠️",
+            CAUTION: "🛑"
+          };
+          html += `<div class="alert alert-${type.toLowerCase()}"><div class="alert-title">${icons[type] || ""} ${type}</div>${renderMarkdown(quote.join("\n"))}</div>\n`;
+        } else {
+          html += `<blockquote>${renderMarkdown(quote.join("\n"))}</blockquote>\n`;
+        }
+        continue;
+      }
+
+      if (/^\|/.test(line.trim()) && i + 1 < lines.length && /^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/.test(lines[i+1].trim())) {
+        closeList();
+        const headCells = line.trim().replace(/^\||\|$/g, "").split("|").map(s => s.trim());
+        i += 2;
+        const rows = [];
+        while (i < lines.length && /^\|/.test(lines[i].trim())) {
+          rows.push(lines[i].trim().replace(/^\||\|$/g, "").split("|").map(s => s.trim()));
+          i++;
+        }
+        html += '<div class="tbl-wrap"><table><thead><tr>' +
+          headCells.map(c => `<th>${renderInline(c)}</th>`).join("") + "</tr></thead><tbody>" +
+          rows.map(r => "<tr>" + r.map(c => `<td>${renderInline(c)}</td>`).join("") + "</tr>").join("") +
+          "</tbody></table></div>\n";
+        continue;
+      }
+
+      const listMatch = line.match(/^(\s*)([-*]|\d+\.)\s+(.*)$/);
+      if (listMatch) {
+        const indent = listMatch[1].length;
+        const marker = listMatch[2];
+        const isUl = marker === "-" || marker === "*";
+        const type = isUl ? "ul" : "ol";
+        const content = listMatch[3];
+
+        if (listStack.length === 0) {
+          listStack.push({ type, indent });
+          html += `<${type}${type === "ol" ? ` start="${parseInt(marker, 10) || 1}"` : ""}>\n`;
+        } else {
+          const top = listStack[listStack.length - 1];
+          if (indent > top.indent) {
+            listStack.push({ type, indent });
+            html += `<${type}${type === "ol" ? ` start="${parseInt(marker, 10) || 1}"` : ""}>\n`;
+          } else if (indent < top.indent) {
+            closeList(indent);
+            if (listStack.length === 0 || listStack[listStack.length - 1].indent < indent) {
+              listStack.push({ type, indent });
+              html += `<${type}${type === "ol" ? ` start="${parseInt(marker, 10) || 1}"` : ""}>\n`;
+            } else if (listStack[listStack.length - 1].type !== type) {
+              const popped = listStack.pop();
+              html += `</${popped.type}>\n`;
+              listStack.push({ type, indent });
+              html += `<${type}${type === "ol" ? ` start="${parseInt(marker, 10) || 1}"` : ""}>\n`;
+            }
+          } else if (top.type !== type) {
+            const popped = listStack.pop();
+            html += `</${popped.type}>\n`;
+            listStack.push({ type, indent });
+            html += `<${type}${type === "ol" ? ` start="${parseInt(marker, 10) || 1}"` : ""}>\n`;
+          }
+        }
+        html += `<li>${renderInline(content)}</li>\n`;
+        i++;
+        continue;
+      }
+
+      closeList();
+      const para = [line];
+      i++;
+      while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^\s*```/.test(lines[i]) && !/^#{1,6}\s/.test(lines[i]) &&
+             !/^>/.test(lines[i]) && !/^\s*[-*]\s/.test(lines[i]) && !/^\s*\d+\.\s/.test(lines[i]) && !/^\|/.test(lines[i]) &&
+             !/^(-{3,}|\*{3,}|_{3,})\s*$/.test(lines[i])) {
+        para.push(lines[i]); i++;
+      }
+      const rendered = renderInline(para.join(" ").trim());
+      if (/^\s*<div class="img-row">[\s\S]*<\/div>\s*$/.test(rendered)) {
+        html += `${rendered}\n`;
+      } else {
+        html += `<p>${rendered}</p>\n`;
+      }
+    }
+    closeList();
+    return html;
+  }
+
+  const params = new URLSearchParams(location.search);
+  const src = params.get("src");
+  const contentEl = document.getElementById("content");
+  const fnameEl = document.getElementById("fname");
+
+  if (!src) {
+    contentEl.innerHTML = '<p class="state">No file specified — open this as doc-viewer.html?src=your-file.md</p>';
+  } else {
+    fnameEl.innerHTML = `<a href="${src}">${src}</a>`;
+    fetch(src)
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(text => {
+        const titleMatch = text.match(/^#\s+(.*)$/m);
+        const title = titleMatch ? titleMatch[1].replace(/[*`]/g, "") : src;
+        document.getElementById("pageTitle").textContent = title;
+        contentEl.innerHTML = renderMarkdown(text);
+      })
+      .catch(err => {
+        contentEl.innerHTML = `<p class="state">Couldn't load <code>${src}</code> (${err.message}).<br>Make sure you're viewing this through a local server (e.g. <code>python -m http.server 8080</code>), not opening the file directly.</p>`;
+      });
+  }
+</script>
+<script>
+  (function () {
+    var KEY = "social-spark-theme";
+    var root = document.documentElement;
+    var btn = document.getElementById("themeToggle");
+    if (!btn) return;
+    function showing() {
+      return root.dataset.theme
+        || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    }
+    function paint() {
+      var s = showing();
+      btn.textContent = s === "dark" ? "☀️" : "🌙";
+      btn.title = s === "dark" ? "Switch to light" : "Switch to dark";
+    }
+    btn.addEventListener("click", function () {
+      var next = showing() === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      try { localStorage.setItem(KEY, next); } catch (e) { /* not fatal */ }
+      paint();
+    });
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
+      if (!root.dataset.theme) paint();
+    });
+    window.addEventListener("storage", function (e) {
+      if (e.key === KEY) {
+        if (e.newValue === "light" || e.newValue === "dark") {
+          root.dataset.theme = e.newValue;
+        } else {
+          delete root.dataset.theme;
+        }
+        paint();
+      }
+    });
+    paint();
+  })();
+</script>
+</body>
+</html>

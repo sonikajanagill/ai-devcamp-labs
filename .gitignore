@@ -1,0 +1,19 @@
+.env
+*.pyc
+__pycache__/
+.venv/
+gallery/
+social_spark.db
+social_spark.log
+# agents-cli deploy state — points at one specific engine in one project
+.adk/
+node_modules/
+.next/
+.DS_Store
+eval_history/
+tsconfig.tsbuildinfo
+ai_devcamp_docs/
+# Coding Agents
+.agents/
+.claude/
+deployment_metadata.json

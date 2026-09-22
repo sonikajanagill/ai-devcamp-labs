@@ -1,0 +1,62 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Simple Pet Store API (mock)",
+    "version": "1.0.0",
+    "description": "A tiny mock API for demonstrating ADK's OpenAPIToolset. Backed by postman-echo.com, which just echoes back whatever it receives — so every call is real over the wire, but nothing has real pet-store behaviour behind it. Zero auth, zero setup, so it works the same on every machine."
+  },
+  "servers": [
+    {"url": "https://postman-echo.com"}
+  ],
+  "paths": {
+    "/get": {
+      "get": {
+        "operationId": "listPets",
+        "summary": "List pets, optionally filtered by status",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {"type": "string", "enum": ["available", "pending", "sold"]},
+            "description": "Filter pets by status"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {"type": "integer"},
+            "description": "Maximum number of pets to return"
+          }
+        ],
+        "responses": {
+          "200": {"description": "A list of pets (echoed request — postman-echo has no real pet data)"}
+        }
+      }
+    },
+    "/post": {
+      "post": {
+        "operationId": "createPet",
+        "summary": "Create a new pet",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": {"type": "string", "description": "The pet's name"},
+                  "status": {"type": "string", "enum": ["available", "pending", "sold"]}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "The created pet (echoed back by postman-echo)"}
+        }
+      }
+    }
+  }
+}

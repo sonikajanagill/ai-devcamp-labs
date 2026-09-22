@@ -1,0 +1,80 @@
+# Eval-gated deploy: the golden evalset must pass before `gcloud run deploy`
+# runs, so a change that breaks approval-gating or PII redaction never
+# reaches prod. The full Cloud Run walkthrough comes in a later lab.
+#
+# One-time prerequisites in a new project (the build fails without them):
+#   * Secret `model-armor-template-id` in Secret Manager, readable by the Cloud
+#     Run service account (or delete the --set-secrets line to run ungoverned).
+#   * Logs bucket:  gcloud storage buckets create gs://PROJECT_ID-cloudbuild-logs \
+#                     --location=us-central1
+#   * us-central1 is the camp's region (Model Armor and Governance need a real
+#     region); pass --substitutions=_REGION=... only if you know why.
+steps:
+  # 1. Install deps, start the mock memory agent as a sidecar, run the golden
+  #    evalset. `adk eval` always exits 0 regardless of pass/fail (verified
+  #    2026-08-17), so we parse "Tests failed: N" ourselves and fail the
+  #    build on any N > 0 — that's what actually gates the deploy step below.
+  - id: eval-gate
+    name: python:3.12
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        pip install --no-cache-dir uv==0.8.13
+        uv sync --frozen
+        uv run python backend/mock_memory_agent.py &
+        MOCK_PID=$$!
+        sleep 5
+        uv run adk eval backend/social_poster evals/golden.json \
+          --config_file_path evals/eval_config.json | tee /tmp/eval_output.log
+        kill $$MOCK_PID
+        FAILED=$$(grep -oE "Tests failed: [0-9]+" /tmp/eval_output.log | tail -1 | grep -oE "[0-9]+")
+        if [ -z "$$FAILED" ]; then
+          echo "Could not parse eval result — treating as failure."
+          exit 1
+        fi
+        if [ "$$FAILED" -gt 0 ]; then
+          echo "Golden evalset regression: $$FAILED test(s) failed. Blocking deploy."
+          exit 1
+        fi
+        echo "Golden evalset passed clean."
+    env:
+      - GOOGLE_GENAI_USE_VERTEXAI=true
+      - GOOGLE_CLOUD_PROJECT=$PROJECT_ID
+      - GOOGLE_CLOUD_LOCATION=${_REGION}
+      - RESEARCH_MODEL=gemini-flash-latest
+      - DRAFT_MODEL=gemini-flash-latest
+      - ORCHESTRATOR_MODEL=gemini-flash-latest
+      - DRY_RUN=true
+      - MEMORY_AGENT_CARD_URL=http://localhost:8001/.well-known/agent.json
+
+  # 2. Build + deploy from source (Cloud Run detects the Dockerfile).
+  #    Non-secret env vars set here; secrets mapped separately (see below).
+  - id: deploy
+    name: gcr.io/cloud-builders/gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE_NAME}
+      - --source=.
+      - --region=${_REGION}
+      - --no-allow-unauthenticated
+      - --min-instances=0
+      - --max-instances=3
+      # LINKEDIN_ACCESS_TOKEN / BUFFER_API_KEY are blank in local .env too
+      # (DRY_RUN=true short-circuits before either is used — see
+      # mcp/linkedin_server.py). Move them to --set-secrets the day a real
+      # token exists; until then a literal empty string matches local
+      # behaviour and there's no secret value to protect.
+      - --set-env-vars=GOOGLE_GENAI_USE_VERTEXAI=true,GOOGLE_CLOUD_PROJECT=$PROJECT_ID,GOOGLE_CLOUD_LOCATION=${_REGION},RESEARCH_MODEL=gemini-flash-latest,DRAFT_MODEL=gemini-flash-latest,ORCHESTRATOR_MODEL=gemini-flash-latest,DRY_RUN=true,MEMORY_AGENT_CARD_URL=,IMAGE_MODEL_ID=gemini-3.1-flash-image,LINKEDIN_ACCESS_TOKEN=,BUFFER_API_KEY=
+      - --set-secrets=MODEL_ARMOR_TEMPLATE_ID=model-armor-template-id:latest
+
+substitutions:
+  _SERVICE_NAME: social-poster
+  _REGION: us-central1
+
+logsBucket: gs://$PROJECT_ID-cloudbuild-logs/social-poster
+options:
+  substitutionOption: ALLOW_LOOSE
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET

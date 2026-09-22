@@ -1,0 +1,978 @@
+<meta charset="utf-8">
+<title>Setup guide — Social Spark</title>
+<style>
+  /* ---------- tokens ---------- */
+  :root {
+    --bg: #fafbfc;
+    --bg-panel: #ffffff;
+    --bg-sidebar: #f3f5f8;
+    --bg-sidebar-hover: #e9edf3;
+    --border: #dde1e6;
+    --border-soft: #e8eaee;
+    --text: #1f2430;
+    --text-muted: #5f6672;
+    --text-faint: #8a909b;
+    --accent: #4285F4;
+    --accent-hover: #3367d6;
+    --accent-soft: #e8f0fe;
+    --red: #c5221f;
+    --red-soft: #fce8e6;
+    --yellow: #FBBC05;
+    --yellow-soft: #fef7e0;
+    --green: #137333;
+    --green-soft: #e6f4ea;
+    --code-bg: #12161c;
+    --code-text: #e3e6ea;
+    --code-comment: #7c8a9c;
+    --code-border: #262b33;
+    --shadow: 0 1px 2px rgba(20, 24, 32, 0.06), 0 2px 12px rgba(20, 24, 32, 0.05);
+    --font-display: -apple-system, "Google Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-body: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14171c;
+      --bg-panel: #1a1e24;
+      --bg-sidebar: #101317;
+      --bg-sidebar-hover: #1d222a;
+      --border: #2a2f37;
+      --border-soft: #242830;
+      --text: #e7e9ec;
+      --text-muted: #a7adb6;
+      --text-faint: #767c86;
+      --accent: #8ab4f8;
+      --accent-hover: #aecbfa;
+      --accent-soft: rgba(138, 180, 248, 0.14);
+      --red: #f28b82;
+      --red-soft: rgba(242, 139, 130, 0.12);
+      --yellow: #fdd663;
+      --yellow-soft: rgba(253, 214, 99, 0.1);
+      --green: #81c995;
+      --green-soft: rgba(129, 201, 149, 0.12);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 16px rgba(0, 0, 0, 0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14171c;
+    --bg-panel: #1a1e24;
+    --bg-sidebar: #101317;
+    --bg-sidebar-hover: #1d222a;
+    --border: #2a2f37;
+    --border-soft: #242830;
+    --text: #e7e9ec;
+    --text-muted: #a7adb6;
+    --text-faint: #767c86;
+    --accent: #8ab4f8;
+    --accent-hover: #aecbfa;
+    --accent-soft: rgba(138, 180, 248, 0.14);
+    --red: #f28b82;
+    --red-soft: rgba(242, 139, 130, 0.12);
+    --yellow: #fdd663;
+    --yellow-soft: rgba(253, 214, 99, 0.1);
+    --green: #81c995;
+    --green-soft: rgba(129, 201, 149, 0.12);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15.5px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; color: var(--text); margin: 0; }
+  a { color: var(--accent); }
+  p { margin: 0 0 14px; max-width: 100%; }
+  ul, ol { margin: 0 0 14px; padding-left: 1.3em; }
+  li { margin-bottom: 6px; max-width: 100%; }
+  code { font-family: var(--font-mono); font-size: 0.87em; background: var(--accent-soft); color: var(--accent-hover); padding: 0.1em 0.4em; border-radius: 4px; }
+
+  /* ---------- progress bar ---------- */
+  .progress-track {
+    position: fixed; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--border-soft); z-index: 50;
+  }
+  .progress-fill {
+    height: 100%; background: var(--accent); width: 0%;
+    transition: width 0.35s ease;
+  }
+
+  /* ---------- shell ---------- */
+  .shell { display: flex; min-height: 100vh; padding-top: 3px; }
+
+  /* ---------- sidebar ---------- */
+  .sidebar {
+    width: 20%; flex: none; background: var(--bg-sidebar);
+    border-right: 1px solid var(--border); padding: 22px 14px 18px;
+    position: sticky; top: 3px; align-self: flex-start; height: calc(100vh - 3px);
+    overflow-y: auto;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; padding: 4px 10px 10px; }
+  .brand-mark {
+    width: 30px; height: 30px; border-radius: 8px; flex: none;
+    background: conic-gradient(from 200deg, var(--accent), var(--green), var(--yellow), var(--red), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+  .brand-text { font-family: var(--font-display); font-weight: 700; font-size: 15.5px; letter-spacing: -0.01em; }
+  .brand-sub { font-size: 12px; color: var(--text-faint); letter-spacing: 0.02em; }
+
+  .step-nav { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .step-nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 8px; cursor: pointer;
+    border-left: 3px solid transparent;
+    color: var(--text-muted); font-size: 12px;
+  }
+  .step-nav-item:hover { background: var(--bg-sidebar-hover); color: var(--text); }
+  .step-nav-item.active { background: var(--accent-soft); color: var(--accent-hover); border-left-color: var(--accent); font-weight: 600; }
+  .step-nav-item.done .step-dot { background: var(--green); color: #fff; border-color: var(--green); }
+  .step-dot {
+    width: 20px; height: 20px; border-radius: 50%; flex: none;
+    border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--text-faint); background: var(--bg-panel);
+  }
+  .step-nav-item.active .step-dot { border-color: var(--accent); color: var(--accent-hover); }
+  .step-label-group { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .step-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 15px; }
+  .step-dur { font-size: 10px; color: var(--text-faint); }
+  .step-nav-item.optional .step-label::after {
+    content: "optional"; margin-left: 6px; font-size: 9.5px; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--yellow); border: 1px solid var(--yellow); border-radius: 4px;
+    padding: 1px 4px; vertical-align: middle;
+  }
+
+  .sidebar-foot {
+    margin-top: auto; padding: 12px 10px; border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--text-faint); line-height: 1.5;
+  }
+  .sidebar-foot a { color: var(--text-muted); text-decoration: underline; text-decoration-color: var(--border); }
+
+  /* ---------- main ---------- */
+  .main { flex: 1; min-width: 0; display: flex; justify-content: center; }
+  .content-col { width: 100%; max-width: 55%; padding: 48px 40px 40px; }
+
+  .step-panel { display: none; }
+  .step-panel.active { display: block; animation: fade-in 0.25s ease; }
+  @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .eyebrow {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  .eyebrow .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--accent-soft); color: var(--accent-hover); border-radius: 5px;
+    padding: 2px 8px; font-weight: 700; letter-spacing: 0.02em;
+  }
+  .eyebrow .pill.optional { background: var(--yellow-soft); color: var(--yellow); }
+  .eyebrow .dur { color: var(--text-faint); font-weight: 500; letter-spacing: 0.01em; }
+
+  .step-title { font-size: 28px; font-weight: 700; letter-spacing: -0.015em; margin-bottom: 18px; }
+  .step-panel h3 { font-size: 18.5px; font-weight: 700; margin: 30px 0 12px; letter-spacing: -0.01em; }
+  .step-panel h3:first-of-type { margin-top: 4px; }
+  .step-panel h4 { font-size: 14.5px; font-weight: 700; margin: 20px 0 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; font-family: var(--font-body); }
+
+  .lede { font-size: 16.5px; color: var(--text-muted); margin-bottom: 22px; }
+
+  /* ---------- callouts ---------- */
+  .callout {
+    /* border-left: 3px solid var(--accent); background: var(--accent-soft); */
+    border-radius: 8px 8px 8px 8px; padding: 12px 16px; margin: 16px 0;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout-label {
+    display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 5px; color: var(--accent-hover);
+  }
+  .callout.warn { border-left-color: var(--red); background: var(--red-soft); }
+  .callout.warn .callout-label { color: var(--red); }
+  .callout.tip { border-left-color: var(--yellow); background: var(--yellow-soft); }
+  .callout.tip .callout-label { color: var(--yellow); }
+  .callout.check { border-left-color: var(--green); background: var(--green-soft); }
+  .callout.check .callout-label { color: var(--green); }
+  .callout.agent p { font-style: italic; }
+
+  /* ---------- code ---------- */
+  .code-block { position: relative; margin: 14px 0 18px; border-radius: 10px; overflow: hidden; border: 1px solid var(--code-border); box-shadow: var(--shadow); }
+  .code-head {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #1a1f27; padding: 7px 12px; font-size: 11px; color: var(--code-comment);
+    font-family: var(--font-mono); letter-spacing: 0.02em; border-bottom: 1px solid var(--code-border);
+  }
+  .copy-btn {
+    background: transparent; border: 1px solid var(--code-border); color: var(--code-comment);
+    font-family: var(--font-body); font-size: 11px; padding: 3px 9px; border-radius: 5px; cursor: pointer;
+  }
+  .copy-btn:hover { color: var(--code-text); border-color: var(--code-comment); }
+  pre { margin: 0; background: var(--code-bg); padding: 14px 16px; overflow-x: auto; }
+  pre code { background: none; padding: 0; color: var(--code-text); font-size: 12.8px; line-height: 1.62; white-space: pre; }
+  .cm { color: var(--code-comment); }
+
+  /* ---------- tree ---------- */
+  .tree { font-family: var(--font-mono); font-size: 12.8px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; white-space: pre; overflow-x: auto; color: var(--text-muted); }
+
+  /* ---------- table ---------- */
+  .tbl-wrap { overflow-x: auto; margin: 14px 0 20px; border: 1px solid var(--border); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.6px; }
+  th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--border-soft); vertical-align: top; }
+  th { background: var(--bg-sidebar); font-weight: 700; color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; }
+  tr:last-child td { border-bottom: none; }
+
+  /* ---------- checkpoint list ---------- */
+  .checklist { list-style: none; padding: 0; margin: 14px 0 20px; display: flex; flex-direction: column; gap: 8px; }
+  .checklist li { display: flex; gap: 10px; align-items: flex-start; margin: 0; }
+  .checklist li::before { content: "✓"; color: var(--green); font-weight: 700; flex: none; margin-top: 1px; }
+
+  /* ---------- nav footer ---------- */
+  .step-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);
+  }
+  .nav-btn {
+    font-family: var(--font-body); font-weight: 600; font-size: 14px; cursor: pointer;
+    border-radius: 8px; padding: 10px 18px; border: 1px solid var(--border); background: var(--bg-panel);
+    color: var(--text); display: inline-flex; align-items: center; gap: 6px;
+  }
+  .nav-btn:hover { border-color: var(--accent); color: var(--accent-hover); }
+  .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .nav-btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: #fff; }
+  .nav-btn:disabled { opacity: 0.35; cursor: default; }
+  .nav-btn:disabled:hover { border-color: var(--border); color: var(--text); }
+
+  /* ---------- given vs write table chips ---------- */
+  .chip { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; border-radius: 5px; padding: 2px 7px; }
+  .chip.given { background: var(--border-soft); color: var(--text-muted); }
+  .chip.write { background: var(--accent-soft); color: var(--accent-hover); }
+
+  /* ---------- figure / svg diagrams ---------- */
+  figure.diagram { margin: 20px 0 24px; padding: 18px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+  figure.diagram svg { width: 100%; height: auto; display: block; color: var(--text); }
+  figure.diagram figcaption { margin-top: 10px; font-size: 12.5px; color: var(--text-faint); text-align: center; }
+  .accent-fill { fill: var(--accent); }
+  .accent-stroke { stroke: var(--accent); }
+  .green-stroke { stroke: var(--green); }
+  .green-fill { fill: var(--green); }
+  .yellow-stroke { stroke: var(--yellow); }
+  .red-stroke { stroke: var(--red); }
+  .muted-stroke { stroke: var(--text-faint); }
+  .soft-fill { fill: var(--bg-sidebar); }
+  .fill-accent { fill: var(--accent-soft); }
+  .fill-green { fill: var(--green-soft); }
+  .fill-yellow { fill: var(--yellow-soft); }
+  .badge-fill { fill: var(--accent); }
+  .shots { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .shots figure { margin: 0; text-align: center; font-size: 12px; color: var(--text-faint); }
+  .shots img { max-width: 100%; border-radius: 8px; border: 1px solid var(--border); }
+  .goal { font-style: italic; color: var(--text-muted); }
+
+  /* ---------- mock UI ---------- */
+  .mock-stepper { display: flex; gap: 4px; margin: 16px 0 20px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); overflow-x: auto; }
+  .mock-stage { flex: 1; min-width: 84px; text-align: center; font-size: 11px; color: var(--text-faint); }
+  .mock-stage .dot { width: 30px; height: 30px; border-radius: 50%; background: var(--bg-sidebar); border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; margin: 0 auto 6px; font-size: 14px; }
+  .mock-stage.done .dot { background: var(--green-soft); border-color: var(--green); color: var(--green); }
+  .mock-stage.current .dot { background: var(--accent-soft); border-color: var(--accent); }
+  .mock-stage.done, .mock-stage.current { color: var(--text); font-weight: 600; }
+
+  /* ---------- mobile ---------- */
+  .mobile-topnav { display: none; }
+  @media (max-width: 880px) {
+    .sidebar { display: none; }
+    .mobile-topnav {
+      display: flex; gap: 6px; overflow-x: auto; position: sticky; top: 3px; z-index: 40;
+      background: var(--bg-sidebar); border-bottom: 1px solid var(--border); padding: 10px 12px;
+    }
+    .mobile-topnav button {
+      flex: none; font-family: var(--font-body); font-size: 12.5px; padding: 6px 12px; border-radius: 20px;
+      border: 1px solid var(--border); background: var(--bg-panel); color: var(--text-muted); cursor: pointer; white-space: nowrap;
+    }
+    .mobile-topnav button.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+    .content-col { max-width: 100%; padding: 28px 20px 32px; }
+    .step-title { font-size: 23px; }
+  }
+
+  /* ---------- back to docs ---------- */
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-muted); text-decoration: none; padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-panel); margin: 0 6px 12px; }
+  .back-link:hover { color: var(--accent); border-color: var(--accent); }
+  .back-link.mob { display: none; }
+  @media (max-width: 880px) { .back-link.mob { display: inline-flex; margin: 0 0 12px; } }
+  @media print { .back-link { display: none; } }
+
+  /* ---------- theme toggle ---------- */
+  .theme-toggle {
+    position: fixed; top: 14px; right: 14px; z-index: 999;
+    width: 34px; height: 34px; padding: 0; border-radius: 10px;
+    display: grid; place-items: center; cursor: pointer;
+    background: var(--panel, var(--bg-panel, #fff));
+    border: 1px solid var(--border); color: var(--muted, var(--text-muted, #666));
+    font-size: 15px; line-height: 1;
+    box-shadow: 0 1px 3px rgba(0,0,0,.10);
+  }
+  .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media print { .theme-toggle { display: none; } }
+
+  /* ---------- Google palette: blue #4285F4, green #34A853, yellow #FBBC05, red #EA4335 ---------- */
+  :root { --g-blue: #4285F4; --g-green: #34A853; --g-yellow: #FBBC05; --g-red: #EA4335; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --g-blue: #8ab4f8; --g-green: #81c995; --g-yellow: #fdd663; --g-red: #f28b82; }
+  }
+  :root[data-theme="dark"] { --g-blue: #8ab4f8; --g-green: #81c995; --g-yellow: #fdd663; --g-red: #f28b82; }
+  .accent-stroke { stroke: var(--g-blue); }   .accent-fill { fill: var(--g-blue); }
+  .green-stroke  { stroke: var(--g-green); }  .green-fill  { fill: var(--g-green); }
+  .yellow-stroke { stroke: var(--g-yellow); } .yellow-fill { fill: var(--g-yellow); }
+  .red-stroke    { stroke: var(--g-red); }    .red-fill    { fill: var(--g-red); }
+  .fill-red { fill: var(--red-soft); }
+  .dot-blue { fill: var(--g-blue); } .dot-green { fill: var(--g-green); } .dot-yellow { fill: var(--g-yellow); } .dot-red { fill: var(--g-red); }
+  .badge-fill { fill: var(--g-blue); }
+  .brand-mark { background: conic-gradient(from 200deg, var(--g-blue), var(--g-green), var(--g-yellow), var(--g-red), var(--g-blue)); }
+  .callout { border-left-color: var(--g-blue); }
+  .callout.warn { border-left-color: var(--g-red); }
+  .callout.tip { border-left-color: var(--g-yellow); }
+  .callout.tip .callout-label { color: var(--text); }
+  .callout.check { border-left-color: var(--g-green); }
+  .callout.agent { border-left-color: var(--g-blue); background: var(--accent-soft); }
+  .callout.agent .callout-label { color: var(--accent); }
+  .eyebrow .pill.optional { color: var(--text); }
+  .step-nav-item.optional .step-label::after { color: var(--text-muted); border-color: var(--g-yellow); }
+</style>
+
+<script>
+  // Runs before the page paints: reading localStorage here avoids the flash of
+  // the OS theme before the reader's own choice is applied.
+  try {
+    var t = localStorage.getItem("social-spark-theme");
+    if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+  } catch (e) { /* private mode — fall back to the OS preference */ }
+</script>
+
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch between light and dark" title="Switch theme">🌗</button>
+
+<div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <a class="back-link" href="index.html">← All docs</a>
+    <div class="brand">
+      <div class="brand-mark">✨</div>
+      <div>
+        <div class="brand-text">Social Spark</div>
+        <div class="brand-sub">GDG DevCamp · Pre-camp setup</div>
+      </div>
+    </div>
+    <ol class="step-nav" id="stepNav"></ol>
+    <div class="sidebar-foot">Stuck? Ask your buddy group, then <code>#setup-help</code> on Discord. This guide is shared on 23 September and any issues are worked through on Discord.</div>
+  </aside>
+
+  <main class="main">
+    <div class="content-col">
+
+      <a class="back-link mob" href="index.html">← All docs</a>
+      <nav class="mobile-topnav" id="mobileNav"></nav>
+
+      <!-- ================= OVERVIEW ================= -->
+      <section class="step-panel" data-step="0">
+        <div class="eyebrow"><span class="pill">Overview</span></div>
+        <h1 class="step-title">Pre-camp setup guide</h1>
+        <p class="lede">Setup takes 45 to 60 minutes across four guided phases. Do it early: the Discord <code>#setup-help</code> channel and your buddy group are there to unblock you before the first workshop. This guide is shared on 23 September, and any setup issues are discussed offline on Discord.</p>
+
+        <figure class="diagram">
+          <svg viewBox="0 0 900 430" role="img" aria-label="Four pre-camp phases in order: Phase 1 Cloud and budget foundation, Phase 2 Local developer tools, Phase 3 Coding agent setup, Phase 4 Environment and camp readiness. They lead into Lab 1 on the first Saturday, where you create the agent project and run it locally.">
+            <defs><marker id="jr-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+            <text x="0" y="16" font-size="12" font-weight="700" fill="currentColor" opacity="0.55" letter-spacing="0.06em">BEFORE THE CAMP — THIS GUIDE</text>
+            <rect x="0" y="30" width="210" height="150" rx="12" class="green-stroke fill-green" stroke-width="2"/>
+            <circle cx="26" cy="56" r="12" class="dot-green"/>
+            <text x="26" y="60.5" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+            <text x="46" y="54" font-size="13" font-weight="700" fill="currentColor">Cloud &amp; budget</text>
+            <text x="46" y="70" font-size="13" font-weight="700" fill="currentColor">foundation</text>
+            <text x="16" y="96" font-size="11.5" fill="currentColor" opacity="0.75">Google account</text><text x="16" y="114" font-size="11.5" fill="currentColor" opacity="0.75">GCP project + $300 credit</text><text x="16" y="132" font-size="11.5" fill="currentColor" opacity="0.75">Spend cap &amp; budget alert</text><text x="16" y="150" font-size="11.5" fill="currentColor" opacity="0.75">Enable the APIs</text>
+            <text x="16" y="170" font-size="10.5" fill="currentColor" opacity="0.55">⏱ 20 min</text>
+            <rect x="230" y="30" width="210" height="150" rx="12" class="accent-stroke fill-accent" stroke-width="2"/>
+            <circle cx="256" cy="56" r="12" class="dot-blue"/>
+            <text x="256" y="60.5" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+            <text x="276" y="54" font-size="13" font-weight="700" fill="currentColor">Local developer</text>
+            <text x="276" y="70" font-size="13" font-weight="700" fill="currentColor">tools</text>
+            <text x="246" y="96" font-size="11.5" fill="currentColor" opacity="0.75">Python 3.12+, uv, Node</text><text x="246" y="114" font-size="11.5" fill="currentColor" opacity="0.75">gcloud → us-central1</text><text x="246" y="132" font-size="11.5" fill="currentColor" opacity="0.75">Authenticate (ADC)</text><text x="246" y="150" font-size="11.5" fill="currentColor" opacity="0.75">Install ADK</text>
+            <text x="246" y="170" font-size="10.5" fill="currentColor" opacity="0.55">⏱ 15 min</text>
+            <rect x="460" y="30" width="210" height="150" rx="12" class="red-stroke fill-red" stroke-width="2"/>
+            <circle cx="486" cy="56" r="12" class="dot-red"/>
+            <text x="486" y="60.5" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">3</text>
+            <text x="506" y="54" font-size="13" font-weight="700" fill="currentColor">Coding agent</text>
+            <text x="506" y="70" font-size="13" font-weight="700" fill="currentColor">superpowers</text>
+            <text x="476" y="96" font-size="11.5" fill="currentColor" opacity="0.75">Antigravity (or Claude</text><text x="476" y="114" font-size="11.5" fill="currentColor" opacity="0.75">Code / Gemini CLI)</text><text x="476" y="132" font-size="11.5" fill="currentColor" opacity="0.75">Agent Platform fallback</text><text x="476" y="150" font-size="11.5" fill="currentColor" opacity="0.75">agents-cli + ADK skills</text>
+            <text x="476" y="170" font-size="10.5" fill="currentColor" opacity="0.55">⏱ 10 min</text>
+            <rect x="690" y="30" width="210" height="150" rx="12" class="yellow-stroke fill-yellow" stroke-width="2"/>
+            <circle cx="716" cy="56" r="12" class="dot-yellow"/>
+            <text x="716" y="60.5" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">4</text>
+            <text x="736" y="54" font-size="13" font-weight="700" fill="currentColor">Environment &amp;</text>
+            <text x="736" y="70" font-size="13" font-weight="700" fill="currentColor">camp readiness</text>
+            <text x="706" y="96" font-size="11.5" fill="currentColor" opacity="0.75">Know your .env values</text><text x="706" y="114" font-size="11.5" fill="currentColor" opacity="0.75">Buddy check</text><text x="706" y="132" font-size="11.5" fill="currentColor" opacity="0.75">Buffer account</text>
+            <text x="706" y="170" font-size="10.5" fill="currentColor" opacity="0.55">⏱ 10 min</text>
+            <line x1="212" y1="105" x2="228" y2="105" stroke="currentColor" stroke-width="1.6" opacity="0.5" marker-end="url(#jr-arrow)"/>
+            <line x1="442" y1="105" x2="458" y2="105" stroke="currentColor" stroke-width="1.6" opacity="0.5" marker-end="url(#jr-arrow)"/>
+            <line x1="672" y1="105" x2="688" y2="105" stroke="currentColor" stroke-width="1.6" opacity="0.5" marker-end="url(#jr-arrow)"/>
+            <path d="M450,190 L450,240" stroke="currentColor" stroke-width="1.6" opacity="0.5" fill="none" marker-end="url(#jr-arrow)"/>
+            <text x="0" y="262" font-size="12" font-weight="700" fill="currentColor" opacity="0.55" letter-spacing="0.06em">FIRST SATURDAY — THE WORKSHOP</text>
+            <rect x="0" y="276" width="900" height="140" rx="12" class="muted-stroke soft-fill" stroke-dasharray="5 4" stroke-width="1.4"/>
+            <text x="20" y="302" font-size="13" font-weight="700" fill="currentColor">Lab 1 — Build</text>
+            <text x="20" y="320" font-size="11.5" fill="currentColor" opacity="0.6">Nothing to do about these now. They are the workshop.</text>
+            <rect x="20" y="334" width="420" height="64" rx="10" class="accent-stroke fill-accent" stroke-width="1.4"/>
+            <text x="38" y="356" font-size="12.5" font-weight="700" fill="currentColor">Create the agent project</text>
+            <text x="38" y="376" font-size="11.5" fill="currentColor" opacity="0.75">Clone the starter repo. agent.py is deliberately empty,</text>
+            <text x="38" y="391" font-size="11.5" fill="currentColor" opacity="0.75">and everything agent-shaped is yours to write.</text>
+            <rect x="460" y="334" width="420" height="64" rx="10" class="green-stroke fill-green" stroke-width="1.4"/>
+            <text x="478" y="356" font-size="12.5" font-weight="700" fill="currentColor">Run &amp; test it locally</text>
+            <text x="478" y="376" font-size="11.5" fill="currentColor" opacity="0.75">adk web, the CopilotKit UI, a real draft, your approval,</text>
+            <text x="478" y="391" font-size="11.5" fill="currentColor" opacity="0.75">and a post that actually publishes.</text>
+          </svg>
+          <figcaption>Four phases before the camp, then the workshop. If you finish the four phases, you are ready.</figcaption>
+        </figure>
+
+        <div class="callout check">
+          <span class="callout-label">Four phases before the camp, then the workshop</span>
+          <p>Everything in this guide is the four boxes on top: account, tools, coding agent, environment. Building the agent and running it happen on the first Saturday, in Lab 1. If you finish the four phases, you are ready.</p>
+        </div>
+
+        <div class="callout">
+          <span class="callout-label">Cost</span>
+          <p>The whole camp is designed to fit well inside Google's <strong>$300 free trial credit</strong> (90 days). You'll set a real spend cap, not just an email alert, in Phase 1 so nothing surprises you.</p>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-label">A card is required</span>
+          <p>Google asks for a credit or debit card to verify identity when you start the free trial. You are not charged during the trial, and it does not auto-charge when the trial ends without you upgrading.</p>
+        </div>
+
+        <div class="callout warn">
+          <span class="callout-label">The $300 credit covers Agent Platform, not AI Studio billing</span>
+          <p>All model calls in this camp, including image generation, go through <strong>Agent Platform inside your GCP project</strong>, so they're covered. If you ever grab a standalone API key from aistudio.google.com, that's a different account with its own billing (Google is moving it to a mandatory prepaid balance from September 2026). Don't put a card on that one.</p>
+        </div>
+
+        <div class="callout">
+          <span class="callout-label">Your coding agent, your account</span>
+          <p>You'll code with Google Antigravity by default (Claude Code or Gemini CLI also work; the labs give you prompts and checkpoints, not code). Any AI IDE accounts, quotas or subscriptions are your own responsibility. The camp only uses your GCP credit for cloud resources.</p>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-label">Windows users</span>
+          <p>You need <strong>WSL 2</strong>. Open PowerShell as Administrator, run <code>wsl --install</code>, restart your computer, then launch the <strong>Ubuntu</strong> terminal. Run every command in this guide inside that Ubuntu terminal.</p>
+        </div>
+
+        <div class="callout warn">
+          <span class="callout-label">No service account keys needed</span>
+          <p>DevCamp uses Application Default Credentials (<code>gcloud auth application-default login</code>) and IAM impersonation. You will never need to create, download or manage sensitive <code>.json</code> key files.</p>
+        </div>
+
+        <div class="step-footer">
+          <button class="nav-btn primary" onclick="goTo(1)">Start: Phase 1 →</button>
+        </div>
+      </section>
+
+      <section class="step-panel" data-step="1">
+        <div class="eyebrow"><span class="pill">Phase 1 of 4</span><span class="dur">⏱ 20 min</span></div>
+        <h1 class="step-title">Cloud &amp; budget foundation</h1>
+        <p class="lede"><span class="goal">Create your GCP project and configure a spend cap so you can never be unexpectedly billed.</span></p>
+
+        <ol>
+          <li>Go to <a href="https://cloud.google.com/free" target="_blank" rel="noopener">cloud.google.com/free</a> and start the free trial with a Google account. A personal Gmail is fine; work accounts often have restrictions, so avoid them.</li>
+          <li>In the top navbar project dropdown, click <strong>New Project</strong> and create a project named <code>ai-devcamp-&lt;yourname&gt;</code>. Google adds a numeric suffix to make the <strong>Project ID</strong> unique, for example <code>ai-devcamp-sonika-509210</code>. <strong>Write down your Project ID</strong>: every command and setting below uses the ID, not the name (find it on the console dashboard's project info card, or in the project dropdown). From here on it is written <code>&lt;PROJECT_ID&gt;</code>. Leave <em>Location</em> as "No organization" if prompted. Projects are global metadata containers in Google Cloud, so you won't see a region selector here.
+            <div style="margin:12px 0"><div class="shots"><figure><img src="img/gcp-project-id.png" alt="Creating the project and finding its Project ID" width="500"><figcaption>Creating the project and finding its Project ID</figcaption></figure></div></div></li>
+          <li>Verify your billing account is linked to your new project (console → <strong>Billing → My Projects</strong>).
+            <div style="margin:12px 0"><div class="shots"><figure><img src="img/gcp-billing-linked.png" alt="Billing account linked to the project" width="500"><figcaption>Billing account linked to the project</figcaption></figure></div></div></li>
+          <li>Enable the required APIs: Agent Platform, Cloud Run, Cloud Build, Sensitive Data Protection, Model Armor, Discovery Engine, Cloud Resource Manager and App Hub. Search for them under <strong>APIs &amp; Services → Enable APIs and Services</strong>, or run the one-line <code>gcloud</code> command in Phase 2 right after installing <code>gcloud</code>.</li>
+          <li><strong>Set a spend cap</strong> (console → <strong>Billing → Budgets &amp; alerts</strong>). Create a budget scoped to your <code>ai-devcamp-&lt;yourname&gt;</code> project with alert thresholds at 50, 80 and 100%, <strong>and</strong> turn on the spend-cap option scoped to the Agent Platform / Gemini API service (currently in preview).
+            <div style="margin:12px 0"><div class="shots"><figure><img src="img/gcp-budget-spend-cap.png" alt="The spend-cap option" width="280"><figcaption>The spend-cap option</figcaption></figure><figure><img src="img/gcp-budget-amount.png" alt="The budget amount" width="280"><figcaption>The budget amount</figcaption></figure></div></div></li>
+        </ol>
+
+        <div class="callout warn">
+          <span class="callout-label">An alert is not a cap</span>
+          <p>A plain email alert doesn't stop anything. The spend cap actually pauses further Agent Platform usage once you hit 100%. That is the one you want.</p>
+        </div>
+
+        <div class="callout check">
+          <span class="callout-label">Phase 1 checkpoint</span>
+          <p>The Agent Platform page in the console loads without an "enable API" prompt, and <strong>Budgets &amp; alerts</strong> shows your budget with the spend cap enabled.</p>
+        </div>
+
+        <div class="step-footer">
+          <button class="nav-btn" onclick="goTo(0)">← Back</button>
+          <button class="nav-btn primary" onclick="goTo(2)">Next: Phase 2 →</button>
+        </div>
+      </section>
+
+      <section class="step-panel" data-step="2">
+        <div class="eyebrow"><span class="pill">Phase 2 of 4</span><span class="dur">⏱ 15 min</span></div>
+        <h1 class="step-title">Local developer tools</h1>
+        <p class="lede"><span class="goal">Get your command line talking to Google Cloud, configure your default deployment region, and install ADK development tools.</span></p>
+
+        <p>Install, in order. Windows users: run all of these inside the Ubuntu (WSL) terminal.</p>
+
+        <ol>
+          <li><strong>Google Cloud SDK</strong> (the <code>gcloud</code> CLI):</li>
+        </ol>
+        <div class="code-block">
+          <div class="code-head"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <pre><code>curl -sSL https://sdk.cloud.google.com | bash
+exec -l $SHELL
+gcloud init</code></pre>
+        </div>
+
+        <ol start="2">
+          <li><strong>uv</strong>, the Python package manager:</li>
+        </ol>
+        <div class="code-block">
+          <div class="code-head"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <pre><code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre>
+        </div>
+
+        <ol start="3">
+          <li><strong>Python 3.14</strong>, installed through <code>uv</code> (now that it's on your machine):</li>
+        </ol>
+        <div class="code-block">
+          <div class="code-head"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <pre><code>uv python install 3.14</code></pre>
+        </div>
+
+        <ol start="4">
+          <li><strong>Node.js 20+</strong>, installed through <code>nvm</code>:</li>
+        </ol>
+        <div class="code-block">
+          <div class="code-head"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <pre><code>curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+exec -l $SHELL
+nvm install 20</code></pre>
+        </div>
+
+        <ol start="5">
+          <li><strong>Authenticate <code>gcloud</code> and enable the APIs</strong>:</li>
+        </ol>
+        <div class="code-block">
+          <div class="code-head"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <pre><code>gcloud auth login
+gcloud auth application-default login
+gcloud config set project &lt;PROJECT_ID&gt;
+gcloud config set compute/region us-central1
+# Lets your local credentials bill API calls to your project (avoids 403s on a new account):
+gcloud auth application-default set-quota-project &lt;PROJECT_ID&gt;
+
+# Enable all required APIs in one command:
+gcloud services enable \
+  aiplatform.googleapis.com \
+  run.googleapis.com \
+  cloudbuild.googleapis.com \
+  artifactregistry.googleapis.com \
+  secretmanager.googleapis.com \
+  dlp.googleapis.com \
+  modelarmor.googleapis.com \
+  discoveryengine.googleapis.com \
+  cloudresourcemanager.googleapis.com \
+  apphub.googleapis.com \
+  agentregistry.googleapis.com \
+  networkservices.googleapis.com \
+  networksecurity.googleapis.com</code></pre>
+        </div>
+
+        <div class="callout tip">
+          <span class="callout-label">Note — Lab 1</span>
+          <p><strong>Git</strong> and a <strong>GitHub account</strong>. In Lab 1 you'll fork the starter repo to your own GitHub account, then clone your fork at the <code>starter</code> tag: the web frontend, the LinkedIn MCP server and the Agent Skills come prebuilt, and you build the agent backend. Nothing to run now — this is just so the commands are familiar on Saturday:</p>
+        </div>
+        <ol>
+          <li>Fork <a href="https://github.com/sonikajanagill/ai-devcamp-labs/fork" target="_blank" rel="noopener">github.com/sonikajanagill/ai-devcamp-labs</a> into your own account (top-right <strong>Fork</strong> button).</li>
+          <li>Clone your fork at the <code>starter</code> tag:</li>
+        </ol>
+        <div class="code-block">
+          <div class="code-head"><span>terminal — Lab 1, not now</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <pre><code>git clone --branch starter --single-branch https://github.com/&lt;your-username&gt;/ai-devcamp-labs.git
+cd ai-devcamp-labs
+git checkout -b my-work</code></pre>
+        </div>
+        <p style="font-size:12.5px;color:var(--text-faint);margin-top:-10px">Cloning a tag (not a branch) leaves you in <strong>detached HEAD</strong>, so the last line cuts a real branch to work and commit on. Swap <code>&lt;your-username&gt;</code> for your GitHub handle.</p>
+
+        <div class="callout tip">
+          <span class="callout-label">Note — Lab 1</span>
+          <p><strong>ADK</strong>: nothing to install now. The starter repo pins an exact ADK version; Lab 1 installs it with <code>uv sync</code> and runs it as <code>uv run adk ...</code>. Please don't install ADK globally, so everyone runs the same version.</p>
+        </div>
+
+        <div class="callout">
+          <span class="callout-label">Why us-central1?</span>
+          <p>Regions in Google Cloud are chosen when you deploy each service, not when you create the project. All workshops in this camp deploy to <code>us-central1</code>, the one location we tested end to end. The Semantic Governance Policy Engine (used in Session 3, Govern) is not available in <code>global</code> or <code>europe-west2</code> (verified directly). Google's documentation lists these supported locations: <code>us-central1</code>, <code>us-east1</code>, <code>us-east4</code>, <code>us-west1</code>, <code>europe-southwest1</code>, <code>europe-west1</code>, <code>europe-west4</code>, <code>europe-west8</code>. We have only tested <code>us-central1</code>. A Governance Policy binds to an Agent Registry entry in whatever region the engine was deployed to, so stay in one region.</p>
+        </div>
+
+        <figure class="diagram">
+          <svg viewBox="0 0 720 220" role="img" aria-label="One GCP project uses two different locations. Gemini model calls use the global location, set by GOOGLE_CLOUD_LOCATION. Everything else, deploying your agent to Agent Runtime, attaching governance policies, and Model Armor in Lab 3, uses the region us-central1, since Model Armor needs a real region and never answers on global.">
+            <defs><marker id="loc-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+            <rect x="8" y="60" width="222" height="100" rx="12" class="accent-stroke fill-accent" stroke-width="2"/>
+            <text x="119" y="97" font-size="13" font-weight="700" text-anchor="middle" fill="currentColor">Your GCP project</text>
+            <text x="119" y="115" font-size="10.5" text-anchor="middle" fill="currentColor" opacity="0.7">&lt;PROJECT_ID&gt;</text>
+            <text x="119" y="131" font-size="10.5" text-anchor="middle" fill="currentColor" opacity="0.7">one project, two locations</text>
+            <line x1="230" y1="110" x2="330" y2="54" stroke="currentColor" stroke-width="1.4" marker-end="url(#loc-arrow)"/>
+            <rect x="332" y="20" width="376" height="68" rx="12" class="green-stroke fill-green" stroke-width="2"/>
+            <text x="348" y="44" font-size="12.5" font-weight="700" fill="currentColor">Gemini model calls</text>
+            <text x="348" y="63" font-size="10.5" fill="currentColor" opacity="0.75">GOOGLE_CLOUD_LOCATION in your .env.</text>
+            <text x="348" y="77" font-size="10.5" fill="currentColor" opacity="0.75">Regions 404 on the newest models.</text>
+            <rect x="618" y="30" width="82" height="24" rx="6" class="green-stroke" fill="none" stroke-width="1.4"/>
+            <text x="659" y="46" font-size="11.5" font-weight="700" text-anchor="middle" fill="currentColor">global</text>
+            <line x1="230" y1="110" x2="330" y2="166" stroke="currentColor" stroke-width="1.4" marker-end="url(#loc-arrow)"/>
+            <rect x="332" y="132" width="376" height="80" rx="12" class="red-stroke fill-red" stroke-width="2"/>
+            <text x="348" y="156" font-size="12.5" font-weight="700" fill="currentColor">Deploying agents &amp; Model Armor</text>
+            <text x="348" y="175" font-size="10.5" fill="currentColor" opacity="0.75">gcloud compute/region · Agent Runtime, Governance</text>
+            <text x="348" y="189" font-size="10.5" fill="currentColor" opacity="0.75">Policies (Labs 2–3) &amp; Model Armor (Lab 3, never global).</text>
+            <rect x="618" y="142" width="82" height="24" rx="6" class="red-stroke" fill="none" stroke-width="1.4"/>
+            <text x="659" y="158" font-size="11.5" font-weight="700" text-anchor="middle" fill="currentColor">us-central1</text>
+          </svg>
+          <figcaption>The most common early mistake is treating these as one setting. They are two, and they are independent — model calls use global, everything else uses us-central1.</figcaption>
+        </figure>
+
+        <div class="callout check">
+          <span class="callout-label">Phase 2 checkpoint</span>
+          <p>Run these in one go — each should return a sensible answer (versions print, and the last line shows your <code>&lt;PROJECT_ID&gt;</code>):</p>
+        </div>
+        <div class="code-block">
+          <div class="code-head"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <pre><code>gcloud --version
+uv --version
+uv python list --only-installed
+node --version
+gcloud config get-value project</code></pre>
+        </div>
+
+        <div class="step-footer">
+          <button class="nav-btn" onclick="goTo(1)">← Back</button>
+          <button class="nav-btn primary" onclick="goTo(3)">Next: Phase 3 →</button>
+        </div>
+      </section>
+
+      <section class="step-panel" data-step="3">
+        <div class="eyebrow"><span class="pill">Phase 3 of 4</span><span class="dur">⏱ 10 min</span></div>
+        <h1 class="step-title">Coding agent setup &amp; ADK superpowers</h1>
+        <p class="lede"><span class="goal">Set up Google Antigravity with your Google Cloud Agent Platform project budget and install ADK skills.</span></p>
+
+        <figure class="diagram">
+          <svg viewBox="0 0 720 210" role="img" aria-label="Three ways to keep a coding agent working. First, Antigravity billed to your own GCP project through Agent Platform, using your 300 dollar credit. Second, a free AI Studio key as a rate-limited backup, separate from the credit. Third, another coding agent such as Claude Code or Gemini CLI, each with its own account and quota.">
+            <defs><marker id="ld-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+            <rect x="4" y="30" width="216" height="130" rx="12" class="accent-stroke fill-accent" stroke-width="2"/>
+            <circle cx="28" cy="54" r="12" class="dot-blue"/>
+            <text x="28" y="58.5" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">1</text>
+            <text x="48" y="59" font-size="13" font-weight="700" fill="currentColor">Antigravity</text>
+            <text x="20" y="94" font-size="11" fill="currentColor" opacity="0.8">Billed to your own GCP project</text>
+            <text x="20" y="111" font-size="11" fill="currentColor" opacity="0.8">through Agent Platform</text>
+            <text x="20" y="134" font-size="10.5" fill="currentColor" opacity="0.6">Uses your $300 credit</text>
+            <rect x="252" y="30" width="216" height="130" rx="12" class="yellow-stroke fill-yellow" stroke-width="2"/>
+            <circle cx="276" cy="54" r="12" class="dot-yellow"/>
+            <text x="276" y="58.5" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">2</text>
+            <text x="296" y="59" font-size="13" font-weight="700" fill="currentColor">Free AI Studio key</text>
+            <text x="268" y="94" font-size="11" fill="currentColor" opacity="0.8">Backup for a stall. No card,</text>
+            <text x="268" y="111" font-size="11" fill="currentColor" opacity="0.8">rate-limited</text>
+            <text x="268" y="134" font-size="10.5" fill="currentColor" opacity="0.6">Separate from the credit</text>
+            <rect x="500" y="30" width="216" height="130" rx="12" class="red-stroke fill-red" stroke-width="2"/>
+            <circle cx="524" cy="54" r="12" class="dot-red"/>
+            <text x="524" y="58.5" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">3</text>
+            <text x="544" y="59" font-size="13" font-weight="700" fill="currentColor">Another coding agent</text>
+            <text x="516" y="94" font-size="11" fill="currentColor" opacity="0.8">Claude Code or Gemini CLI.</text>
+            <text x="516" y="111" font-size="11" fill="currentColor" opacity="0.8">The labs work with any</text>
+            <text x="516" y="134" font-size="10.5" fill="currentColor" opacity="0.6">Your own account and quota</text>
+            <line x1="222" y1="95" x2="248" y2="95" stroke="currentColor" stroke-width="1.5" marker-end="url(#ld-arrow)"/>
+            <line x1="470" y1="95" x2="496" y2="95" stroke="currentColor" stroke-width="1.5" marker-end="url(#ld-arrow)"/>
+            <text x="360" y="190" font-size="10.5" text-anchor="middle" fill="currentColor" opacity="0.6">If one stalls on quota during a workshop, move right. Set up 1 and 2 before Saturday.</text>
+          </svg>
+          <figcaption>Three ways to keep your coding agent working. Only the first is required.</figcaption>
+        </figure>
+
+        <ol>
+          <li><strong>Download and launch Google Antigravity.</strong></li>
+          <li><strong>Sign in through the Business Account (Google Cloud Project) pathway.</strong>
+            <ul>
+              <li><strong>Select the Business pathway.</strong> When logging in (or back in, if you previously used a personal or Pro account), do <strong>not</strong> choose "Continue with Google". Choose <strong>Business Account</strong>, or the option that says <em>"Use Google Cloud project instead"</em> or <em>"Continue with Google Cloud"</em>.</li>
+              <li><strong>Authenticate.</strong> Even though it says "Business", your browser opens Google's standard sign-in. Use your personal Gmail, or whichever account owns your project.</li>
+              <li><strong>Link your project and budget.</strong> The extension asks for:
+                <ul>
+                  <li><strong>Google Cloud Project ID:</strong> your <code>&lt;PROJECT_ID&gt;</code> (the ID, not the name), the project holding your Agent Platform budget.</li>
+                  <li><strong>Location:</strong> <code>Global</code>.</li>
+                  <li><strong>Select License / Agent Platform:</strong> if you see <em>"No license available for this project and location"</em>, click <strong>"Use Agent Platform instead — Pay as you go provisioned for your Google Cloud project"</strong>.</li>
+                </ul>
+                <div style="margin:12px 0"><div class="shots"><figure><img src="img/antigravity-vertex-settings.png" alt="Select License: use Agent Platform instead" width="500"><figcaption>Select License: use Agent Platform instead</figcaption></figure></div></div></li>
+              <li><strong>Verify your account tier.</strong> Open <strong>Account Settings</strong>. Your plan should read <strong>Your Plan: Agent Platform</strong> (pay as you go), linked to your Project ID and Gmail. All token use from your IDE is billed to the budget on your GCP project.
+                <div style="margin:12px 0"><div class="shots"><figure><img src="img/antigravity-vertex-settings1.png" alt="Account Settings showing the Agent Platform plan" width="500"><figcaption>Account Settings showing the Agent Platform plan</figcaption></figure></div></div></li>
+            </ul>
+          </li>
+        </ol>
+
+        <div class="callout warn">
+          <span class="callout-label">Troubleshooting: Agent Platform API error</span>
+          <p>If Antigravity says <em>"Agent Platform API has not been used in project &lt;PROJECT_ID&gt; before or it is disabled"</em>:</p>
+          <p><strong>Fix:</strong> click the link in the error message to enable the Agent Platform API (<code>aiplatform.googleapis.com</code>), or run <code>gcloud services enable aiplatform.googleapis.com</code>. Wait 2 to 3 minutes for it to propagate, then retry.</p>
+          <p><strong>IAM permissions:</strong> your Google account needs <strong>Agent Platform User</strong> (<code>roles/aiplatform.user</code>), <strong>Owner</strong> or <strong>Editor</strong> on your GCP project.</p>
+        </div>
+
+        <ol start="3">
+          <li><strong>Optional second backup:</strong> a <strong>free-tier</strong> key from aistudio.google.com (no card, no billing setup). It's rate-limited but enough to get through a stall, and it's separate from your $300 credit. Do <strong>not</strong> enable Prepay or billing on that account.</li>
+          <li><strong>Prefer another coding agent</strong> (Claude Code, Gemini CLI)? Fine. The labs give you the prompt to type and the result to check, not the code, so any agent works.</li>
+          <li><strong>Teach your coding agent about ADK.</strong> One command, worth more than it looks:</li>
+        </ol>
+        <div class="code-block">
+          <div class="code-head"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <pre><code>uvx google-agents-cli setup</code></pre>
+        </div>
+        <p>This installs Google's <code>agents-cli</code> (so from here on the labs run plain <code>agents-cli ...</code>, not <code>uvx</code>) <strong>and</strong> detects which coding agents you have (Antigravity, Claude Code, Cursor, Windsurf…), then installs a set of ADK development skills into each one. Every lab works by you prompting your coding agent to build something, and this is what makes its answers match current ADK instead of whatever its training data remembers. Add <code>--dry-run</code> first to see what it would change, or <code>--workspace</code> to install into the project folder rather than globally.</p>
+
+        <div class="callout agent">
+          <span class="callout-label">Two different kinds of skills</span>
+          <p>These are skills for the <em>AI that writes your code</em>. They're a different thing from the <strong>Agent Skills</strong> in the starter repo's <code>skills/</code> folder, which are instructions your <em>agent</em> loads at runtime. You'll build with those in Lab 1.</p>
+        </div>
+
+        <div class="callout check">
+          <span class="callout-label">Phase 3 checkpoint</span>
+          <ul><li>Antigravity displays your plan as <strong>Agent Platform</strong> (pay as you go).</li><li>Ask Antigravity to create a hello-world Python file; review its plan, accept, run it.</li><li><code>agents-cli --version</code> returns a version. In Antigravity's chat panel ask <em>"What ADK skills do you have?"</em>. It should list several <code>google-agents-cli-*</code> entries (like <code>adk-code</code>, <code>adk-dev-guide</code>).</li></ul>
+        </div>
+
+        <div class="step-footer">
+          <button class="nav-btn" onclick="goTo(2)">← Back</button>
+          <button class="nav-btn primary" onclick="goTo(4)">Next: Phase 4 →</button>
+        </div>
+      </section>
+
+      <section class="step-panel" data-step="4">
+        <div class="eyebrow"><span class="pill">Phase 4 of 4</span><span class="dur">⏱ 10 min</span></div>
+        <h1 class="step-title">Environment, buddy check &amp; camp readiness</h1>
+        <p class="lede"><span class="goal">Confirm your environment variables, verify setup with your buddy, and prep social tools.</span></p>
+
+        <h2>1. Environment variables</h2>
+        <div class="callout tip">
+          <span class="callout-label">You can't create these files yet, and you don't need to</span>
+          <p>There are two: the backend's at <code>backend/social_poster/.env</code>, the frontend's at <code>frontend/.env.local</code>. Both live inside the repo you clone in Lab 1, so neither exists until the workshop starts. Lab 1 walks you through copying each <code>.env.example</code> into place. What matters <em>now</em> is knowing the backend's four core values and why they're what they are, especially <code>GOOGLE_CLOUD_LOCATION</code>, the single most common cause of a 404 on the first model call.</p>
+        </div>
+        <p>Backend — these are the values you'll put in <code>backend/social_poster/.env</code>:</p>
+        <div class="code-block">
+          <div class="code-head"><span>backend/social_poster/.env — from Lab 1</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <pre><code>GOOGLE_GENAI_USE_VERTEXAI=TRUE
+GOOGLE_CLOUD_PROJECT=&lt;PROJECT_ID&gt;
+GOOGLE_CLOUD_LOCATION=global
+DRY_RUN=true</code></pre>
+        </div>
+        <p><code>DRY_RUN=true</code> means the LinkedIn posting tool logs posts instead of publishing. Nobody posts anything by accident in this camp.</p>
+        <p>Frontend — <code>frontend/.env.local</code> holds the web app's own settings, separate from the backend's: a <code>NEXT_PUBLIC_GOOGLE_CLIENT_ID</code> for Google Sign-In, and (only if you deploy the agent later) the Agent Runtime URL it should call instead of your local backend. Lab 1 gives you the values to fill in; there's nothing to note down now.</p>
+
+        <div class="callout warn">
+          <span class="callout-label">Use global, not a regional endpoint</span>
+          <p><code>gemini-flash-latest</code> returns a 404 <em>"Publisher model not found"</em> in <code>europe-west1</code> and in <code>europe-west2</code>. Regional Agent Platform endpoints can lag behind <code>global</code> for the newest flash models, and <code>global</code> is the one location confirmed to serve it. This was confirmed by direct testing, not assumed.</p>
+          <p>It is unrelated to Phase 2's <code>us-central1</code> (Agent Runtime and Governance Policies) and to Model Armor's region in Session 3. Those settings are independent. See the diagram in Phase 2.</p>
+        </div>
+
+        <h2>2. Buddy check</h2>
+        <p>You'll be placed in a small buddy group in Discord before the first workshop. Before Saturday, post your checkpoint results from Phases 1 to 3 in your group thread and confirm one buddy's results in return. Broken setups get fixed in the group or on Discord, not during the workshop.</p>
+
+        <h2>3. Recommended before Saturday</h2>
+        <ul>
+          <li><strong>Buffer account.</strong> Lab 1 publishes through Buffer's MCP server. Create a free Buffer account and connect at least one channel (a LinkedIn profile is fine). No card is needed for the free tier. You'll grab the API key during the lab.</li>
+          <li><strong>LinkedIn Developer app</strong> (optional bonus step in Lab 1; everything else works through Buffer or in dry-run). Skip it if you're short on time; a guide is linked from the lab.</li>
+          <li><strong>GCS image hosting for Buffer</strong> (optional and advanced, not part of Lab 1's taught steps, which keep Buffer text-only by design). Only relevant if you want Buffer posts to carry an image like the reference build does. It needs a one-time IAM setup outside the app's own reach: a dedicated service account with signing rights via impersonation, not a downloaded key. Set <code>GOOGLE_CLOUD_PROJECT</code> and <code>GCS_BUCKET_NAME</code> in your <code>.env</code>, then run <code>./gcp-setup.sh</code> from the repo root. Skip this unless you're specifically extending past Lab 1.</li>
+          <li>Join the <strong>GDG London Discord</strong> (<a href="https://discord.gg/952SuUXME" target="_blank" rel="noopener">discord.gg/952SuUXME</a>) and say hi in <code>#introductions</code>. Channels: <code>#setup-help</code>, <code>#session-1</code> to <code>#session-4</code>, <code>#show-your-use-case</code>.</li>
+          <li>Think of <strong>one use case of your own</strong>: an agent you'd like to exist. You'll declare it in Lab 1 and build it alongside ours as each lab's Assignment.</li>
+          <li><strong>Optional: see Google's own scaffold.</strong> Curious what <code>agents-cli</code> generates? In a scratch folder (not the workshop repo), run <code>agents-cli create my-agent --prototype --yes</code>. The labs use our own project, so treat this as a look around. It is also the best test that everything above works: the scaffold uses your gcloud project, and you run it with <code>cd my-agent &amp;&amp; agents-cli install &amp;&amp; agents-cli playground</code>.</li>
+        </ul>
+
+        <div class="callout check">
+          <span class="callout-label">Phase 4 checkpoint</span>
+          <p>Your four <code>.env</code> values are written down and your buddy check is posted. If you tried the scaffold above, <code>agents-cli playground</code> opens a chat and your first message gets a reply. A 404 <em>"Publisher model ... was not found"</em> means <code>GOOGLE_CLOUD_LOCATION</code> is still set to a region, not <code>global</code>.</p>
+        </div>
+
+        <div class="step-footer">
+          <button class="nav-btn" onclick="goTo(3)">← Back</button>
+          <button class="nav-btn primary" onclick="goTo(5)">Next: Wrap-up →</button>
+        </div>
+      </section>
+
+      <section class="step-panel" data-step="5">
+        <div class="eyebrow"><span class="pill">Wrap-up</span></div>
+        <h1 class="step-title">You're ready. Here's what's next.</h1>
+        <p class="lede">Four phases done means you can start Lab 1 on Saturday without setup getting in the way.</p>
+
+        <h2>The running use case you'll build</h2>
+        <p>An agent that turns your idea into a formatted social post: it researches the web, drafts with Agent Skills, generates an image, waits for your approval in a proper web UI, and publishes via MCP. Built in Lab 1, made production-ready across Labs 2 to 4.</p>
+
+        <h2>Schedule</h2>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>Session</th><th>Thursday (theory, 1hr)</th><th>Saturday (workshop, 2hr)</th><th>Pillar</th></tr></thead>
+          <tbody>
+            <tr><td>Kickoff</td><td>23 Sept, 6–9pm, hybrid: Skyscanner + online</td><td>—</td><td>Series overview + trends</td></tr>
+            <tr><td>1</td><td>24 Sept</td><td>26 Sept</td><td>Build</td></tr>
+            <tr><td>2</td><td>1 Oct</td><td>3 Oct</td><td>Scale</td></tr>
+            <tr><td>3</td><td>8 Oct</td><td>10 Oct</td><td>Govern</td></tr>
+            <tr><td>4</td><td>15 Oct</td><td>17 Oct</td><td>Optimise</td></tr>
+          </tbody>
+        </table></div>
+
+        <div class="callout warn">
+          <span class="callout-label">If something breaks</span>
+          <ol>
+            <li>Ask your buddy group, then search <code>#setup-help</code>. Someone has probably hit it.</li>
+            <li>Post your OS, the exact command and the exact error.</li>
+            <li>Still stuck on Saturday? Pair with a buddy. Broken environments follow along on the instructor project and fix after.</li>
+          </ol>
+        </div>
+
+        <div class="step-footer">
+          <button class="nav-btn" onclick="goTo(4)">← Back</button>
+          <button class="nav-btn primary" onclick="goTo(0)">Back to start ↑</button>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+  const STEPS = [
+    { i: 0, label: "Overview", dur: "", hash: "overview" },
+    { i: 1, label: "Phase 1 · Cloud &amp; budget", dur: "20m", hash: "phase1" },
+    { i: 2, label: "Phase 2 · Local tools", dur: "15m", hash: "phase2" },
+    { i: 3, label: "Phase 3 · Coding agent", dur: "10m", hash: "phase3" },
+    { i: 4, label: "Phase 4 · Environment", dur: "10m", hash: "phase4" },
+    { i: 5, label: "Wrap-up", dur: "", hash: "wrapup" },
+  ];
+  const HASH_TO_STEP = Object.fromEntries(STEPS.map(s => [s.hash, s.i]));
+
+
+  const navEl = document.getElementById("stepNav");
+  const mobileEl = document.getElementById("mobileNav");
+
+  STEPS.forEach(s => {
+    const li = document.createElement("li");
+    li.className = "step-nav-item" + (s.optional ? " optional" : "");
+    li.dataset.step = s.i;
+    li.onclick = () => goTo(s.i);
+    const dotLabel = s.i === 0 ? "•" : (s.i === 5 ? "★" : s.i);
+    li.innerHTML = `<span class="step-dot">${dotLabel}</span>
+      <span class="step-label-group">
+        <span class="step-label">${s.label}</span>
+        ${s.dur ? `<span class="step-dur">${s.dur}</span>` : ""}
+      </span>`;
+    navEl.appendChild(li);
+
+    const btn = document.createElement("button");
+    btn.textContent = s.i === 0 ? "Overview" : (s.i === 5 ? "Wrap-up" : "Step " + s.i);
+    btn.dataset.step = s.i;
+    btn.onclick = () => goTo(s.i);
+    mobileEl.appendChild(btn);
+  });
+
+  let current = 0;
+  const seen = new Set([0]);
+
+  function goTo(n, updateHash) {
+    current = n;
+    seen.add(n);
+    document.querySelectorAll(".step-panel").forEach(p => {
+      p.classList.toggle("active", parseInt(p.dataset.step) === n);
+    });
+    document.querySelectorAll(".step-nav-item").forEach(el => {
+      const s = parseInt(el.dataset.step);
+      el.classList.toggle("active", s === n);
+      el.classList.toggle("done", seen.has(s) && s !== n);
+    });
+    document.querySelectorAll(".mobile-topnav button").forEach(el => {
+      el.classList.toggle("active", parseInt(el.dataset.step) === n);
+    });
+    const pct = Math.round((n / (STEPS.length - 1)) * 100);
+    document.getElementById("progressFill").style.width = pct + "%";
+    window.scrollTo({ top: 0, behavior: "instant" in window ? "instant" : "auto" });
+    if (updateHash !== false) {
+      const hash = "#" + (STEPS[n] ? STEPS[n].hash : "overview");
+      if (location.hash !== hash) history.pushState({ step: n }, "", hash);
+    }
+  }
+
+  window.addEventListener("popstate", () => {
+    const n = HASH_TO_STEP[location.hash.slice(1)];
+    goTo(n !== undefined ? n : 0, false);
+  });
+
+  function copyBlock(btn) {
+    const code = btn.closest(".code-block").querySelector("code");
+    const text = code.innerText;
+    const done = () => { const old = btn.textContent; btn.textContent = "Copied!"; setTimeout(() => btn.textContent = old, 1400); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => {});
+    }
+  }
+
+  const initialStep = HASH_TO_STEP[location.hash.slice(1)];
+  goTo(initialStep !== undefined ? initialStep : 0, false);
+</script>
+
+<script>
+  // Three states, not two: no stored value means "follow the OS", which holds
+  // until the reader expresses a preference. The toggle then pins the opposite
+  // of whatever is currently showing.
+  (function () {
+    var KEY = "social-spark-theme";
+    var root = document.documentElement;
+    var btn = document.getElementById("themeToggle");
+    function showing() {
+      return root.dataset.theme
+        || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    }
+    function paint() {
+      var s = showing();
+      btn.textContent = s === "dark" ? "☀️" : "🌙";
+      btn.title = s === "dark" ? "Switch to light" : "Switch to dark";
+    }
+    btn.addEventListener("click", function () {
+      var next = showing() === "dark" ? "light" : "dark";
+      root.dataset.theme = next;
+      try { localStorage.setItem(KEY, next); } catch (e) { /* not fatal */ }
+      paint();
+    });
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
+      if (!root.dataset.theme) paint();
+    });
+    paint();
+  })();
+</script>
+
+<style>
+  .copy-btn, .prompt-copy { display: inline-flex; align-items: center; gap: 6px; }
+  .copy-btn svg, .prompt-copy svg { width: 13px; height: 13px; flex: none; }
+  .callout.agent.has-copy .callout-label { display: flex; align-items: center; gap: 10px; }
+  .prompt-copy {
+    margin-left: auto; flex: none; white-space: nowrap; font-family: var(--font-body); font-size: 12px; text-transform: none; letter-spacing: 0;
+    font-weight: 500; font-style: normal; padding: 3px 9px; border-radius: 6px; cursor: pointer; background: var(--bg-panel);
+    color: var(--text-muted); border: 1px solid var(--border);
+  }
+  .prompt-copy:hover { color: var(--text); border-color: var(--text-faint); }
+</style>
+<script>
+  // Copy icons: every code block already has a Copy button; give it an icon, and add
+  // one to each prompt for the coding agent so it can be pasted in one click.
+  (function () {
+    var ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+    function copyText(text, btn) {
+      var label = btn.querySelector("span");
+      var done = function () { var old = label.textContent; label.textContent = "Copied!"; setTimeout(function () { label.textContent = old; }, 1400); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(function () {});
+      } else {
+        var t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select();
+        try { document.execCommand("copy"); done(); } catch (e) {} document.body.removeChild(t);
+      }
+    }
+    window.copyBlock = function (btn) { copyText(btn.closest(".code-block").querySelector("code").innerText, btn); };
+    document.querySelectorAll(".copy-btn").forEach(function (b) { b.innerHTML = ICON + "<span>Copy</span>"; });
+    document.querySelectorAll(".callout.agent").forEach(function (c) {
+      var label = c.querySelector(".callout-label");
+      if (!label || !/^(Prompt for your coding agent|Ask your coding agent|Tell it what to remember)/.test(label.textContent.trim())) return;
+      var b = document.createElement("button");
+      b.className = "prompt-copy"; b.type = "button"; b.innerHTML = ICON + "<span>Copy prompt</span>";
+      b.addEventListener("click", function () {
+        copyText(Array.prototype.map.call(c.querySelectorAll("p"), function (p) { return p.innerText.trim(); }).join("\n\n"), b);
+      });
+      c.classList.add("has-copy"); label.appendChild(b);
+    });
+  })();
+</script>
