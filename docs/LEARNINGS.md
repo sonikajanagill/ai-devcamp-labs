@@ -19,7 +19,7 @@ Entries are grouped by pillar.
 Checked per pillar rather than assumed: **Build** — `agents-cli setup` is
 valuable (installs the CLI plus ADK skills into whichever coding agent the
 attendee has), but `scaffold create`/`enhance` does *not* fit this repo, as
-already established in August (it clobbers
+already established in `docs/cloud-run-deploy.md` back in August (it clobbers
 the hand-pinned `pyproject.toml` and expects `app/`, not
 `backend/social_poster/`). **Scale** — `agents-cli deploy` is the documented
 path, full stop. **Govern** — no commands exist for Agent Gateway or Semantic

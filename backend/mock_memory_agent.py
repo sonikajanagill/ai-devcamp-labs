@@ -1,8 +1,8 @@
 """Local mock of the Agent Engine RAG memory agent, served over A2A.
 
 The real memory agent is the Agent Garden RAG sample deployed to
-Agent Engine with your actual past posts in its datastore (set up in a later
-lab). This mock serves the same A2A protocol
+Agent Engine with your actual past posts in its datastore (see
+docs/agent-engine-rag-setup.md). This mock serves the same A2A protocol
 locally with a handful of hardcoded "past posts", so the A2A wiring, the
 orchestrator's memory consultation, and the eval suite can all run without
 a cloud deploy.

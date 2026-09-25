@@ -42,7 +42,7 @@ None of these are required for local dev against the default backend on
 
 | Var | Default | Purpose |
 |---|---|---|
-| `ADK_BACKEND_URL` | `http://localhost:8000/api/adk` | where the CopilotKit runtime (`app/api/copilotkit/route.ts`) forwards agent requests — point this at a deployed backend instead of local (covered in the Scale lab) |
+| `ADK_BACKEND_URL` | `http://localhost:8000/api/adk` | where the CopilotKit runtime (`app/api/copilotkit/route.ts`) forwards agent requests — point this at a deployed backend instead of local, e.g. through the `gcloud run services proxy` setup in [docs/cloud-run-deploy.md](../docs/cloud-run-deploy.md) |
 | `NEXT_PUBLIC_BACKEND_ORIGIN` | `http://localhost:8000` | where `app/components/PostGallery.tsx` fetches generated images from (the backend's `/outputs/...` route) |
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | unset | OAuth 2.0 Web client ID for Google sign-in (`app/components/auth.tsx`) — a plain Web client ID from any GCP project's Credentials page, no Firebase needed. Without it, users can still "Continue as guest" |
 

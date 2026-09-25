@@ -1,6 +1,6 @@
 # Eval-gated deploy: the golden evalset must pass before `gcloud run deploy`
 # runs, so a change that breaks approval-gating or PII redaction never
-# reaches prod. The full Cloud Run walkthrough comes in a later lab.
+# reaches prod. See docs/cloud-run-deploy.md for the full walkthrough.
 #
 # One-time prerequisites in a new project (the build fails without them):
 #   * Secret `model-armor-template-id` in Secret Manager, readable by the Cloud

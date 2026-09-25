@@ -73,8 +73,8 @@ Each of these is off by default; the agent still works without any of them.
 | Publish/schedule via Buffer | `BUFFER_API_KEY` | free Buffer account, hosted MCP server, nothing to run locally |
 | Force one posting route | `POST_VIA=buffer` or `linkedin` | blank (default) lets the agent route by what the user asks for |
 | Let Buffer attach generated images | `GCS_BUCKET_NAME` + `GCS_SIGNING_SERVICE_ACCOUNT` | run `./gcp-setup.sh` from the repo root first (one-time IAM setup, no key file) — see the comment above it in `.env.example` |
-| Recall the user's past posts | `MEMORY_AGENT_CARD_URL` | local mock: `uv run python backend/mock_memory_agent.py`, then point at `http://localhost:8001/.well-known/agent.json`; a real deployed memory agent comes in a later lab |
-| Guardrails (Model Armor + DLP) | `MODEL_ARMOR_TEMPLATE_ID` | covered in the Govern lab |
+| Recall the user's past posts | `MEMORY_AGENT_CARD_URL` | local mock: `uv run python backend/mock_memory_agent.py`, then point at `http://localhost:8001/.well-known/agent.json`; real deploy: [docs/agent-engine-rag-setup.md](../docs/agent-engine-rag-setup.md) |
+| Guardrails (Model Armor + DLP) | `MODEL_ARMOR_TEMPLATE_ID` | see [docs/model-armor-setup.md](../docs/model-armor-setup.md) |
 
 `DRY_RUN=true` (the default) makes LinkedIn/Buffer posting log the payload
 and return a fake URL instead of actually publishing. Keep it `true` except
@@ -87,9 +87,11 @@ uv run adk eval backend/social_poster evals/golden.json \
   --config_file_path evals/eval_config.json
 ```
 
-CI wraps this instead of running it bare (`adk eval` always exits 0, even on failure).
+See [docs/cloud-run-deploy.md](../docs/cloud-run-deploy.md) for why CI wraps
+this instead of running it bare (`adk eval` always exits 0, even on failure).
 
 ## Deploying
 
-The Dockerfile → Cloud Build → Cloud Run path and tracing are covered in the
-Scale and Optimise labs.
+See [docs/cloud-run-deploy.md](../docs/cloud-run-deploy.md) for the full
+Dockerfile → Cloud Build → Cloud Run path, and
+[docs/observability.md](../docs/observability.md) for tracing once it's live.

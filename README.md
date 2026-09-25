@@ -63,8 +63,20 @@ docs/                    labs, setup guide, deploy and reference docs
 gcp-setup.sh             one-time Google Cloud setup: APIs, templates, grants
 ```
 
-## Reference docs
+## Deploy and reference docs
 
 | Doc | Covers |
 |---|---|
+| [agent-runtime-deploy.md](docs/agent-runtime-deploy.md) | Deploy to Agent Runtime, sessions and memory, the frontend on Cloud Run |
+| [cloud-run-deploy.md](docs/cloud-run-deploy.md) | Optional reference (not used in the labs): Dockerfile, `cloudbuild.yaml`, IAM, eval-gated CI/CD |
+| [model-armor-setup.md](docs/model-armor-setup.md) | Guardrail templates, grants and switches |
+| [observability.md](docs/observability.md) | Cloud Trace and the BigQuery analytics agent |
 | [LEARNINGS.md](docs/LEARNINGS.md) | What broke and why, by pillar |
+
+**What's deployed right now?** An Agent Runtime engine scales to zero when idle, and the console only shows one region at a time, so a deployed agent can look missing. Ask the CLI:
+
+```bash
+agents-cli deploy --list -d agent_runtime --project YOUR_PROJECT --region us-central1 --no-confirm-project
+```
+
+`-d agent_runtime` is needed because this project has no `agents-cli-manifest.yaml`.
