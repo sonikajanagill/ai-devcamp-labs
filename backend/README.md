@@ -8,7 +8,7 @@ at `/api/adk`.
 
 ## Prerequisites
 
-- Python 3.12+
+- Python 3.14+
 - [uv](https://docs.astral.sh/uv/)
 - A GCP project with the Agent Platform API enabled, and
   `gcloud auth application-default login` run once. No service-account key

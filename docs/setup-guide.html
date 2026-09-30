@@ -399,14 +399,14 @@
             <text x="256" y="60.5" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">2</text>
             <text x="276" y="54" font-size="13" font-weight="700" fill="currentColor">Local developer</text>
             <text x="276" y="70" font-size="13" font-weight="700" fill="currentColor">tools</text>
-            <text x="246" y="96" font-size="11.5" fill="currentColor" opacity="0.75">Python 3.12+, uv, Node</text><text x="246" y="114" font-size="11.5" fill="currentColor" opacity="0.75">gcloud → us-central1</text><text x="246" y="132" font-size="11.5" fill="currentColor" opacity="0.75">Authenticate (ADC)</text><text x="246" y="150" font-size="11.5" fill="currentColor" opacity="0.75">Install ADK</text>
+            <text x="246" y="96" font-size="11.5" fill="currentColor" opacity="0.75">Python 3.14+, uv, Node</text><text x="246" y="114" font-size="11.5" fill="currentColor" opacity="0.75">gcloud → us-central1</text><text x="246" y="132" font-size="11.5" fill="currentColor" opacity="0.75">Authenticate (ADC)</text><text x="246" y="150" font-size="11.5" fill="currentColor" opacity="0.75">Install ADK</text>
             <text x="246" y="170" font-size="10.5" fill="currentColor" opacity="0.55">⏱ 15 min</text>
             <rect x="460" y="30" width="210" height="150" rx="12" class="red-stroke fill-red" stroke-width="2"/>
             <circle cx="486" cy="56" r="12" class="dot-red"/>
             <text x="486" y="60.5" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">3</text>
             <text x="506" y="54" font-size="13" font-weight="700" fill="currentColor">Coding agent</text>
             <text x="506" y="70" font-size="13" font-weight="700" fill="currentColor">superpowers</text>
-            <text x="476" y="96" font-size="11.5" fill="currentColor" opacity="0.75">Antigravity (or Claude</text><text x="476" y="114" font-size="11.5" fill="currentColor" opacity="0.75">Code / Gemini CLI)</text><text x="476" y="132" font-size="11.5" fill="currentColor" opacity="0.75">Agent Platform fallback</text><text x="476" y="150" font-size="11.5" fill="currentColor" opacity="0.75">agents-cli + ADK skills</text>
+            <text x="476" y="96" font-size="11.5" fill="currentColor" opacity="0.75">Antigravity (or Claude</text><text x="476" y="114" font-size="11.5" fill="currentColor" opacity="0.75">Code / AGY CLI)</text><text x="476" y="132" font-size="11.5" fill="currentColor" opacity="0.75">Agent Platform fallback</text><text x="476" y="150" font-size="11.5" fill="currentColor" opacity="0.75">agents-cli + ADK skills</text>
             <text x="476" y="170" font-size="10.5" fill="currentColor" opacity="0.55">⏱ 10 min</text>
             <rect x="690" y="30" width="210" height="150" rx="12" class="yellow-stroke fill-yellow" stroke-width="2"/>
             <circle cx="716" cy="56" r="12" class="dot-yellow"/>
@@ -457,7 +457,7 @@
 
         <div class="callout">
           <span class="callout-label">Your coding agent, your account</span>
-          <p>You'll code with Google Antigravity by default (Claude Code or Gemini CLI also work; the labs give you prompts and checkpoints, not code). Any AI IDE accounts, quotas or subscriptions are your own responsibility. The camp only uses your GCP credit for cloud resources.</p>
+          <p>You'll code with Google Antigravity by default (Claude Code or AGY CLI also work; the labs give you prompts and checkpoints, not code). Any AI IDE accounts, quotas or subscriptions are your own responsibility. The camp only uses your GCP credit for cloud resources.</p>
         </div>
 
         <div class="callout tip">
@@ -515,16 +515,6 @@
         <p>Install, in order. Windows users: run all of these inside the Ubuntu (WSL) terminal.</p>
 
         <ol>
-          <li><strong>Google Cloud SDK</strong> (the <code>gcloud</code> CLI):</li>
-        </ol>
-        <div class="code-block">
-          <div class="code-head"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-          <pre><code>curl -sSL https://sdk.cloud.google.com | bash
-exec -l $SHELL
-gcloud init</code></pre>
-        </div>
-
-        <ol start="2">
           <li><strong>uv</strong>, the Python package manager:</li>
         </ol>
         <div class="code-block">
@@ -532,15 +522,7 @@ gcloud init</code></pre>
           <pre><code>curl -LsSf https://astral.sh/uv/install.sh | sh</code></pre>
         </div>
 
-        <ol start="3">
-          <li><strong>Python 3.14</strong>, installed through <code>uv</code> (now that it's on your machine):</li>
-        </ol>
-        <div class="code-block">
-          <div class="code-head"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
-          <pre><code>uv python install 3.14</code></pre>
-        </div>
-
-        <ol start="4">
+        <ol start="2">
           <li><strong>Node.js 20+</strong>, installed through <code>nvm</code>:</li>
         </ol>
         <div class="code-block">
@@ -549,6 +531,38 @@ gcloud init</code></pre>
 exec -l $SHELL
 nvm install 20</code></pre>
         </div>
+
+        <ol start="3">
+          <li><strong>Python 3.14</strong>, installed through <code>uv</code> — the Google Cloud SDK's own installer needs a Python on your <code>PATH</code>, so get this in place before it:</li>
+        </ol>
+        <div class="code-block">
+          <div class="code-head"><span>terminal</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <pre><code>uv python install 3.14</code></pre>
+        </div>
+
+        <ol start="4">
+          <li><strong>Google Cloud SDK</strong> (the <code>gcloud</code> CLI), <strong>macOS (Apple Silicon)</strong>:</li>
+        </ol>
+        <div class="code-block">
+          <div class="code-head"><span>terminal — macOS, Apple Silicon</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <pre><code>curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-darwin-arm.tar.gz
+tar -xf google-cloud-cli-darwin-arm.tar.gz
+./google-cloud-sdk/install.sh
+exec -l $SHELL
+gcloud init</code></pre>
+        </div>
+        <p>On an <strong>Intel Mac</strong>, swap the filename for <code>google-cloud-cli-darwin-x86_64.tar.gz</code>.</p>
+        <p><strong>Linux / WSL (Ubuntu/Debian)</strong>:</p>
+        <div class="code-block">
+          <div class="code-head"><span>terminal — Linux / WSL</span><button class="copy-btn" onclick="copyBlock(this)">Copy</button></div>
+          <pre><code>sudo apt-get update
+sudo apt-get install -y apt-transport-https ca-certificates gnupg curl
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+sudo apt-get update && sudo apt-get install -y google-cloud-cli
+gcloud init</code></pre>
+        </div>
+        <p style="font-size:12.5px;color:var(--text-faint)">Other platforms (Windows without WSL, non-Debian Linux): <a href="https://docs.cloud.google.com/sdk/docs/install-sdk" target="_blank" rel="noopener">docs.cloud.google.com/sdk/docs/install-sdk</a>.</p>
 
         <ol start="5">
           <li><strong>Authenticate <code>gcloud</code> and enable the APIs</strong>:</li>
@@ -655,7 +669,7 @@ gcloud config get-value project</code></pre>
         <p class="lede"><span class="goal">Set up Google Antigravity with your Google Cloud Agent Platform project budget and install ADK skills.</span></p>
 
         <figure class="diagram">
-          <svg viewBox="0 0 720 210" role="img" aria-label="Three ways to keep a coding agent working. First, Antigravity billed to your own GCP project through Agent Platform, using your 300 dollar credit. Second, a free AI Studio key as a rate-limited backup, separate from the credit. Third, another coding agent such as Claude Code or Gemini CLI, each with its own account and quota.">
+          <svg viewBox="0 0 720 210" role="img" aria-label="Three ways to keep a coding agent working. First, Antigravity billed to your own GCP project through Agent Platform, using your 300 dollar credit. Second, a free AI Studio key as a rate-limited backup, separate from the credit. Third, another coding agent such as Claude Code or AGY CLI, each with its own account and quota.">
             <defs><marker id="ld-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
             <rect x="4" y="30" width="216" height="130" rx="12" class="accent-stroke fill-accent" stroke-width="2"/>
             <circle cx="28" cy="54" r="12" class="dot-blue"/>
@@ -675,7 +689,7 @@ gcloud config get-value project</code></pre>
             <circle cx="524" cy="54" r="12" class="dot-red"/>
             <text x="524" y="58.5" font-size="12.5" font-weight="700" fill="#fff" text-anchor="middle">3</text>
             <text x="544" y="59" font-size="13" font-weight="700" fill="currentColor">Another coding agent</text>
-            <text x="516" y="94" font-size="11" fill="currentColor" opacity="0.8">Claude Code or Gemini CLI.</text>
+            <text x="516" y="94" font-size="11" fill="currentColor" opacity="0.8">Claude Code or AGY CLI.</text>
             <text x="516" y="111" font-size="11" fill="currentColor" opacity="0.8">The labs work with any</text>
             <text x="516" y="134" font-size="10.5" fill="currentColor" opacity="0.6">Your own account and quota</text>
             <line x1="222" y1="95" x2="248" y2="95" stroke="currentColor" stroke-width="1.5" marker-end="url(#ld-arrow)"/>
@@ -713,7 +727,7 @@ gcloud config get-value project</code></pre>
 
         <ol start="3">
           <li><strong>Optional second backup:</strong> a <strong>free-tier</strong> key from aistudio.google.com (no card, no billing setup). It's rate-limited but enough to get through a stall, and it's separate from your $300 credit. Do <strong>not</strong> enable Prepay or billing on that account.</li>
-          <li><strong>Prefer another coding agent</strong> (Claude Code, Gemini CLI)? Fine. The labs give you the prompt to type and the result to check, not the code, so any agent works.</li>
+          <li><strong>Prefer another coding agent</strong> (Claude Code, AGY CLI)? Fine. The labs give you the prompt to type and the result to check, not the code, so any agent works.</li>
           <li><strong>Teach your coding agent about ADK.</strong> One command, worth more than it looks:</li>
         </ol>
         <div class="code-block">

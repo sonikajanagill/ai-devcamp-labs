@@ -51,7 +51,7 @@ Week 4 deck.
 
 ## 0. What's already in the repo
 
-- [`Dockerfile`](../Dockerfile) — `python:3.12-slim`, `uv sync --frozen`,
+- [`Dockerfile`](../Dockerfile) — `python:3.14-slim`, `uv sync --frozen`,
   `uvicorn backend.main:app` on `$PORT`. Backend only — the Next.js frontend
   stays local and points at whichever backend URL you give it (see §3).
 - [`cloudbuild.yaml`](../cloudbuild.yaml) — two steps: `eval-gate` then

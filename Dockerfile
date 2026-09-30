@@ -1,7 +1,7 @@
 # Cloud Run image for the social_poster agent (backend only — the Next.js
 # frontend stays local, pointed at this service via ADK_BACKEND_URL).
 # Run from the repo root:  docker build -t social-poster .
-FROM python:3.12-slim
+FROM python:3.14-slim
 
 RUN pip install --no-cache-dir uv==0.8.13
 

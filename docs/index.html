@@ -51,10 +51,17 @@
   }
   main { width: 100%; max-width: 1180px; margin: 0 auto; }
 
-  .brand { display: flex; align-items: center; gap: 11px; margin-bottom: 6px; }
-  .mark { width: 34px; height: 34px; border-radius: 10px; background: conic-gradient(from 200deg,#1a73e8,#34a853,#fbbc04,#ea4335,#1a73e8); }
+  .top-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 26px; }
+  .top-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .mark {
+    width: 34px; height: 34px; border-radius: 10px; flex: none;
+    background: conic-gradient(from 200deg,#1a73e8,#34a853,#fbbc04,#ea4335,#1a73e8);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
   h1 { font-size: 24px; margin: 0; letter-spacing: -0.015em; }
-  p.sub { color: var(--muted); margin: 0 0 26px; font-size: 14.5px; max-width: 68ch; }
+  p.sub { color: var(--muted); margin: 0; font-size: 14.5px; max-width: 68ch; }
   h2.section { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 34px 0 12px; font-weight: 700; }
 
   /* ---------- bento ---------- */
@@ -149,6 +156,11 @@
   .theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
   .theme-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   @media print { .theme-toggle { display: none; } }
+
+  /* ---------- GDG London logo ---------- */
+  .gdg-logo { height: 64px; width: auto; border-radius: 8px; flex: none; }
+  @media (max-width: 620px) { .gdg-logo { height: 44px; } }
+  @media print { .gdg-logo { display: none; } }
   /* yellow is too light to read as text on its own tint */
   .p-govern .badge { color: var(--text); }
 </style>
@@ -165,8 +177,13 @@
 <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch between light and dark" title="Switch theme">🌗</button>
 
 <main>
-  <div class="brand"><div class="mark"></div><h1>Social Spark — Docs</h1></div>
-  <p class="sub">The finished, governed reference implementation. Served straight from this repo — no build step, just point a static server at this folder.</p>
+  <div class="top-row">
+    <div class="top-text">
+      <div class="brand"><div class="mark"> ✨</div><h1>Social Spark — Docs</h1></div>
+      <p class="sub">The finished, governed reference implementation. Served straight from this repo — no build step, just point a static server at this folder.</p>
+    </div>
+    <img class="gdg-logo" src="img/gdg_london.png" alt="GDG London">
+  </div>
 
   <h2 class="section">Start here</h2>
   <div class="bento">
