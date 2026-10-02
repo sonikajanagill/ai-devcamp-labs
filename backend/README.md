@@ -76,9 +76,16 @@ Each of these is off by default; the agent still works without any of them.
 | Recall the user's past posts | `MEMORY_AGENT_CARD_URL` | local mock: `uv run python backend/mock_memory_agent.py`, then point at `http://localhost:8001/.well-known/agent.json`; a real deployed memory agent comes in a later lab |
 | Guardrails (Model Armor + DLP) | `MODEL_ARMOR_TEMPLATE_ID` | covered in the Govern lab |
 
-`DRY_RUN=true` (the default) makes LinkedIn/Buffer posting log the payload
-and return a fake URL instead of actually publishing. Keep it `true` except
-for one deliberate happy-path check, then flip it back.
+`DRY_RUN=true` (the default) makes **LinkedIn** posting log the payload and
+return a fake URL instead of publishing. Keep it `true` except for one
+deliberate happy-path check, then flip it back.
+
+**Buffer has no dry run.** `DRY_RUN` doesn't touch the Buffer route: an
+approved Buffer post is real. The safety net there is
+`BUFFER_REVIEW_DELAY_MINUTES` (default `60`), which schedules every post at
+least that far ahead so you can delete it in Buffer before it goes out. Also
+set `DRY_RUN=false` when using Buffer with images: `upload_image` honours
+`DRY_RUN` and would otherwise hand Buffer a fake image URL.
 
 ## Evals
 

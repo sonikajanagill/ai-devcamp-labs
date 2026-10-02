@@ -132,7 +132,7 @@ gcloud run deploy social-poster \
   --no-allow-unauthenticated \
   --min-instances=0 \
   --max-instances=3 \
-  --set-env-vars=GOOGLE_GENAI_USE_VERTEXAI=true,GOOGLE_CLOUD_PROJECT=YOUR_PROJECT_ID,GOOGLE_CLOUD_LOCATION=us-central1,RESEARCH_MODEL=gemini-flash-latest,DRAFT_MODEL=gemini-flash-latest,ORCHESTRATOR_MODEL=gemini-flash-latest,DRY_RUN=true,MEMORY_AGENT_CARD_URL=,IMAGE_MODEL_ID=gemini-3.1-flash-image,LINKEDIN_ACCESS_TOKEN=,BUFFER_API_KEY= \
+  --set-env-vars=GOOGLE_GENAI_USE_VERTEXAI=true,GOOGLE_CLOUD_PROJECT=YOUR_PROJECT_ID,GOOGLE_CLOUD_LOCATION=us-central1,RESEARCH_MODEL=gemini-2.5-flash,DRAFT_MODEL=gemini-2.5-flash,ORCHESTRATOR_MODEL=gemini-2.5-flash,DRY_RUN=true,MEMORY_AGENT_CARD_URL=,IMAGE_MODEL_ID=gemini-3.1-flash-image,LINKEDIN_ACCESS_TOKEN=,BUFFER_API_KEY= \
   --set-secrets=MODEL_ARMOR_TEMPLATE_ID=model-armor-template-id:latest \
   --project=YOUR_PROJECT_ID
 ```

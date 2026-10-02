@@ -775,7 +775,7 @@ DRY_RUN=true</code></pre>
 
         <div class="callout warn">
           <span class="callout-label">Use global, not a regional endpoint</span>
-          <p><code>gemini-flash-latest</code> returns a 404 <em>"Publisher model not found"</em> in <code>europe-west1</code> and in <code>europe-west2</code>. Regional Agent Platform endpoints can lag behind <code>global</code> for the newest flash models, and <code>global</code> is the one location confirmed to serve it. This was confirmed by direct testing, not assumed.</p>
+          <p>A 404 <em>"Publisher model not found"</em> usually means the location: regional Agent Platform endpoints such as <code>europe-west1</code> and <code>europe-west2</code> can lag behind <code>global</code> for the newest models (confirmed by direct testing). It can also mean the model name itself: the <code>gemini-flash-latest</code> alias started returning 404 everywhere on 2026-10-02, so this project pins real names such as <code>gemini-2.5-flash</code>.</p>
           <p>It is unrelated to Phase 2's <code>us-central1</code> (Agent Runtime and Governance Policies) and to Model Armor's region in Session 3. Those settings are independent. See the diagram in Phase 2.</p>
         </div>
 

@@ -692,7 +692,7 @@ uv sync</code></pre>
 
         <div class="callout agent">
           <span class="callout-label">Ask your coding agent</span>
-          <p>In <code>backend/social_poster/agent.py</code>, create an ADK <code>Agent</code> named <code>social_poster</code> on model <code>gemini-flash-latest</code>, with a one-line description and an instruction that it helps the user turn an idea into a social media post. Expose it as <code>root_agent</code>. No tools yet.</p>
+          <p>In <code>backend/social_poster/agent.py</code>, create an ADK <code>Agent</code> named <code>social_poster</code> on model <code>gemini-2.5-flash</code>, with a one-line description and an instruction that it helps the user turn an idea into a social media post. Expose it as <code>root_agent</code>. No tools yet.</p>
         </div>
 
         <div class="code-block">
@@ -701,7 +701,7 @@ uv sync</code></pre>
 
 root_agent = Agent(
     name="social_poster",
-    model="gemini-flash-latest",
+    model="gemini-2.5-flash",
     description="Helps the user turn an idea into a polished social media post.",
     instruction="You help the user turn an idea into a social media post.",
 )</code></pre>
@@ -745,7 +745,7 @@ from .tools import generate_image
 
 root_agent = Agent(
     name="social_poster",
-    model="gemini-flash-latest",
+    model="gemini-2.5-flash",
     description="Helps the user turn an idea into a polished social media post.",
     instruction="""You help the user turn an idea into a social media post.
 If the user asks for an image, call generate_image with a detailed visual
@@ -901,7 +901,7 @@ skill_toolset = SkillToolset(
 
 root_agent = Agent(
     name="social_poster",
-    model="gemini-flash-latest",
+    model="gemini-2.5-flash",
     description="Helps the user turn an idea into a polished social media post.",
     instruction="""You help the user turn an idea into a social media post.
 
@@ -966,7 +966,7 @@ from google.adk.tools.agent_tool import AgentTool
 
 search_agent = Agent(
     name="web_researcher",
-    model="gemini-flash-latest",
+    model="gemini-2.5-flash",
     description="Researches facts, dates, and context on the web.",
     instruction="Research the given query and return a concise summary of relevant facts.",
     tools=[google_search],
@@ -974,7 +974,7 @@ search_agent = Agent(
 
 root_agent = Agent(
     name="social_poster",
-    model="gemini-flash-latest",
+    model="gemini-2.5-flash",
     description="Helps the user turn an idea into a polished social media post.",
     instruction="""You help the user turn an idea into a social media post.
 

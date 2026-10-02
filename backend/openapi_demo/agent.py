@@ -28,7 +28,7 @@ pet_store_toolset = OpenAPIToolset(
 
 root_agent = Agent(
     name="openapi_demo",
-    model="gemini-flash-latest",
+    model="gemini-2.5-flash",
     description="Demo agent showing ADK's OpenAPIToolset: tools generated directly from an OpenAPI spec.",
     instruction="""You manage a (mock) pet store. Use list_pets and create_pet
 as needed. Every response is echoed back by the test server, not real pet

@@ -51,7 +51,7 @@ while building IS the curriculum. Write them down as you go or lose them."
 
 memory_agent = Agent(
     name="memory_agent",
-    model="gemini-flash-latest",
+    model="gemini-2.5-flash",
     description="Knows the user's past social media posts, topics, and writing voice.",
     instruction=f"""You are the user's posting memory. Their past posts:
 {_PAST_POSTS}

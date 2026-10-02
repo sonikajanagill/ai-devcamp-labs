@@ -17,7 +17,7 @@ You give the **orchestrator** (`social_poster`) an idea. It loads **Agent Skills
 | Layer | What we use | Why |
 |---|---|---|
 | Agent framework | [Google ADK](https://google.github.io/adk-docs/) (Python) | Agents, tools, sub-agents, sessions, evals |
-| Models | Gemini (`gemini-flash-latest`, Gemini image model) | Reasoning, drafting, image generation |
+| Models | Gemini (`gemini-2.5-flash`, Gemini image model) | Reasoning, drafting, image generation |
 | Agent knowledge | Agent Skills (`skills/`) | Brand voice as a reviewable markdown folder |
 | Publishing | MCP servers: Buffer (remote), LinkedIn (optional, stdio) | Real posts behind a human approval gate |
 | Agent-to-agent | A2A (`memory_agent`, optional) | A separate memory service the orchestrator can ask |
